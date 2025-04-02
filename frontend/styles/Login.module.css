@@ -1,0 +1,122 @@
+/* Styles for the Login Page - aiming to match the screenshot */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  /* Use justify-content: space-between and align-items: center for overall layout */
+  justify-content: space-between; /* Pushes title up, box center, potential footer down */
+  align-items: center;
+  min-height: 100vh;
+  background-color: #212121; /* Dark background */
+  padding: 40px; /* Add padding around the edges */
+  box-sizing: border-box;
+  font-family: 'Anonymous Pro', monospace; /* Monospace font */
+  color: #FFFFFF; /* Default white text */
+}
+
+.title {
+  font-weight: 700;
+  font-size: 64px;
+  color: #FFFFFF;
+  align-self: flex-start; /* Align title to the left */
+  /* Removed absolute positioning for better flow */
+}
+
+.loginBox {
+  background-color: #323232; /* Darker grey box */
+  padding: 40px;
+  border-radius: 19px; /* Rounded corners */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 400px; /* Limit width */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  margin-top: auto; /* Push box towards center vertically */
+  margin-bottom: auto; /* Push box towards center vertically */
+}
+
+.loginTitle {
+  font-weight: 400;
+  font-size: 24px;
+  color: #FFFFFF;
+  margin-bottom: 30px;
+}
+
+.buttonBase { /* Common button styles */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 5px;
+  padding: 12px 20px; /* Adjusted padding */
+  font-family: 'Anonymous Pro', monospace;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  transition: background-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.googleButton {
+  composes: buttonBase; /* Inherit base styles */
+  background-color: #D9D9D9; /* Light grey */
+  color: #333; /* Darker text for contrast */
+  margin-bottom: 15px;
+}
+
+.googleButton:hover {
+  background-color: #c0c0c0;
+}
+
+.googleButton img {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+.separator {
+  font-weight: 700;
+  font-size: 15px;
+  color: #FFFFFF;
+  margin: 15px 0;
+}
+
+.input {
+  background-color: #D9D9D9; /* Light grey */
+  border: none;
+  border-radius: 5px;
+  padding: 12px 15px;
+  width: 100%;
+  margin-bottom: 15px;
+  font-family: 'Anonymous Pro', monospace;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.58); /* Placeholder text color */
+  box-sizing: border-box;
+}
+
+.input::placeholder {
+  color: rgba(0, 0, 0, 0.58);
+}
+
+.emailButton {
+  composes: buttonBase; /* Inherit base styles */
+  background-color: #35653B; /* Green */
+  color: #FFFFFF;
+  margin-bottom: 25px;
+}
+
+.emailButton:hover {
+  background-color: #2a502f;
+}
+
+.terms {
+  font-family: 'Inter', sans-serif; /* Use Inter for terms */
+  font-weight: 300;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.6); /* Lighter white */
+  text-align: center;
+  max-width: 80%; /* Prevent text from being too wide */
+}

@@ -1,0 +1,29 @@
+/* Basic CSS Reset */
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  /* Prevent scrolling on the main page elements */
+  height: 100%;
+  overflow: hidden; /* Prevent scrollbars on html/body */
+}
+
+body > div:first-child,
+div#__next,
+div#__next > div {
+  height: 100%; /* Ensure Next.js wrapper divs take full height */
+}
+
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* You can add more global styles or resets here if needed */
