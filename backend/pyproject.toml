@@ -17,6 +17,7 @@ python-jose = {extras = ["cryptography"], version = "^3.3.0"} # JWT handling
 passlib = {extras = ["bcrypt"], version = "^1.7.4"} # Password hashing
 python-dotenv = "^1.0.1" # For loading environment variables from .env file
 # Add other core dependencies as needed
+pydantic-settings = "^2.2.1" # For loading settings from env vars
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0" # Testing framework

@@ -9,17 +9,8 @@ services:
       - ./backend:/app # Mount backend code into the container
     ports:
       - "8000:8000" # Expose backend port
-    environment:
-      - NEO4J_URI=bolt://graphdb:7687
-      - NEO4J_USER=neo4j
-      - NEO4J_PASSWORD=selkie_password # Use a strong password, consider secrets management
-      - MINIO_ENDPOINT=objectstore:9000
-      - MINIO_ACCESS_KEY=selkie_minio_access # Use strong keys
-      - MINIO_SECRET_KEY=selkie_minio_secret # Use strong keys
-      - MINIO_SECURE=false # Set to true if using TLS with MinIO
-      - JWT_SECRET_KEY=a_very_secret_key_for_jwt # CHANGE THIS! Use a strong, random secret
-      - JWT_ALGORITHM=HS256
-      - ACCESS_TOKEN_EXPIRE_MINUTES=30
+    env_file:
+      - ./backend/.env # Load environment variables from this file
     depends_on:
       - graphdb
       - objectstore
