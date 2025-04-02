@@ -1,0 +1,79 @@
+/* Styles for shared layout components */
+
+.layoutContainer {
+  display: flex;
+  flex-direction: column; /* Header on top, then sidebar+content */
+  height: 100vh; /* Use viewport height */
+  background-color: #212121; /* Main background */
+  color: #FFFFFF;
+  overflow: hidden; /* Prevent scroll on the main container */
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 15px 30px;
+  border-bottom: 1px solid #444; /* Separator line */
+  background-color: #212121; /* Or a slightly different shade if needed */
+  flex-shrink: 0; /* Prevent header from shrinking */
+}
+
+.headerLogo {
+  margin-right: 15px;
+  /* Styles for the next/image component will be handled mostly inline or via props */
+  /* Ensure vertical alignment if needed */
+  display: flex; /* Helps with vertical alignment */
+  align-items: center;
+}
+
+.headerTitle {
+  font-family: 'Anonymous Pro', monospace;
+  font-weight: 700; /* Bold like login */
+  font-size: 24px; /* Match Figma style_GZ5Z1L */
+  color: #FFFFFF;
+}
+
+.mainContentArea {
+  display: flex;
+  flex-grow: 1; /* Takes remaining vertical space */
+  overflow: hidden; /* Prevent main area from causing scroll */
+}
+
+.sidebar {
+  width: 200px; /* Adjust width as needed */
+  background-color: #212121; /* Match main background */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0; /* Prevent sidebar from shrinking */
+  border-right: 1px solid #444; /* Separator */
+}
+
+.sidebarLink {
+  font-family: 'Anonymous Pro', monospace;
+  font-size: 16px; /* Match Figma style_PCMQBQ */
+  color: #FFFFFF;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  cursor: pointer; /* Indicate interactivity */
+}
+
+.sidebarLink:hover {
+  background-color: #444;
+}
+
+.sidebarLinkActive {
+  composes: sidebarLink; /* Inherit base styles */
+  background-color: #555; /* Highlight for active link (adjust color based on Figma) */
+  font-weight: bold;
+}
+
+.pageContent {
+  flex-grow: 1; /* Takes remaining horizontal space */
+  position: relative; /* Needed for absolutely positioned children like overlays */
+  overflow: auto; /* Allow scrolling within the content area if needed, but not the whole page */
+  padding: 20px; /* Add some padding */
+}
