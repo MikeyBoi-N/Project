@@ -1,0 +1,79 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile # We'll create this Dockerfile next
+    container_name: selkie_backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload # Run FastAPI with reload for dev
+    volumes:
+      - ./backend:/app # Mount backend code into the container
+    ports:
+      - "8000:8000" # Expose backend port
+    environment:
+      - NEO4J_URI=bolt://graphdb:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=selkie_password # Use a strong password, consider secrets management
+      - MINIO_ENDPOINT=objectstore:9000
+      - MINIO_ACCESS_KEY=selkie_minio_access # Use strong keys
+      - MINIO_SECRET_KEY=selkie_minio_secret # Use strong keys
+      - MINIO_SECURE=false # Set to true if using TLS with MinIO
+      - JWT_SECRET_KEY=a_very_secret_key_for_jwt # CHANGE THIS! Use a strong, random secret
+      - JWT_ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=30
+    depends_on:
+      - graphdb
+      - objectstore
+    networks:
+      - selkie_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile # We'll create this Dockerfile next
+    container_name: selkie_frontend
+    ports:
+      - "3000:3000" # Expose frontend port
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000 # URL for frontend to reach backend API
+      # Add other frontend env vars if needed
+    depends_on:
+      - backend
+    networks:
+      - selkie_net
+
+  graphdb:
+    image: neo4j:5.19.0 # Use specific version matching driver if needed
+    container_name: selkie_graphdb
+    ports:
+      - "7474:7474" # Neo4j Browser
+      - "7687:7687" # Bolt protocol
+    volumes:
+      - neo4j_data:/data
+    environment:
+      - NEO4J_AUTH=neo4j/selkie_password # Set username/password
+      # Add heap size settings etc. if needed: NEO4J_server_memory_heap_initial__size, NEO4J_server_memory_heap_max__size
+    networks:
+      - selkie_net
+
+  objectstore:
+    image: minio/minio:latest # Changed to latest tag
+    container_name: selkie_objectstore
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000" # MinIO API
+      - "9001:9001" # MinIO Console
+    volumes:
+      - minio_data:/data
+    environment:
+      - MINIO_ROOT_USER=selkie_minio_access # Access key
+      - MINIO_ROOT_PASSWORD=selkie_minio_secret # Secret key
+    networks:
+      - selkie_net
+
+volumes:
+  neo4j_data:
+  minio_data:
+
+networks:
+  selkie_net:
+    driver: bridge
