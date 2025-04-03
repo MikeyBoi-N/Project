@@ -10,13 +10,12 @@ const GhostPage: React.FC = () => {
       <main className={styles.mainContent}>
         <section className={styles.heroSection}>
           <div className={styles.textContainer}>
-            <h1>Unveil Insights with Ghost: The Anomaly Detector</h1>
-            <p>
-              Ghost automatically monitors your data streams, identifying unusual patterns and anomalies in real-time.
-              Configure alerts, investigate deviations, and maintain system health proactively.
-              It's designed for scalability and integrates with various monitoring tools.
-              {/* Add more specific text from Figma Frame 2033:60 here */}
-              {/* Reference architecture/selkie_architecture.md line 15 if needed */}
+            <h1 className={styles.title}>Ghost: Master the Spectrum with Signal Intelligence</h1>
+            <p className={styles.description}>
+              Decode the electromagnetic environment with Ghost. This powerful Signal Processing engine utilizes Software-Defined Radio (SDR) technology to detect, analyze, classify, and potentially locate RF signals.
+            </p>
+            <p className={styles.description}>
+              Ghost integrates seamlessly with Kappa for transcription and translation of intercepted communications and visualizes signal intelligence directly on the map, providing a critical layer of understanding.
             </p>
             {/* Add buttons or other elements from Figma if present */}
           </div>
@@ -24,8 +23,9 @@ const GhostPage: React.FC = () => {
             <Image
               src="/images/promo/ghost_promo_main.png"
               alt="Ghost Promotional Image"
-              width={500} // Adjust based on Figma
-              height={400} // Adjust based on Figma
+              layout="responsive" // Use layout="responsive" or "fill" and control size with CSS
+              width={700} // Provide aspect ratio hint, actual size controlled by CSS - Adjust ratio if needed based on ghost_promo_main.png
+              height={475} // Provide aspect ratio hint, actual size controlled by CSS - Adjust ratio if needed based on ghost_promo_main.png
               priority
             />
           </div>

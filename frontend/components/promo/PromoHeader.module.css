@@ -1,29 +1,56 @@
+/* Styles for PromoHeader based on Figma Frames (e.g., 2034:97) */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem; /* Adjust padding based on Figma */
-  background-color: #f8f9fa; /* Example background, adjust based on Figma */
-  border-bottom: 1px solid #e0e0e0; /* Example border, adjust based on Figma */
+  padding: 1.5rem 5rem; /* Adjust padding based on Figma */
+  background-color: #212121; /* Dark background from Figma */
+  border-bottom: 1px solid #444; /* Subtle border */
 }
 
 .logoContainer {
-  /* Add styles if needed */
+  /* Assuming the logo image itself is handled in the component */
+  display: flex;
+  align-items: center;
 }
+
+.logoContainer img {
+  height: 30px; /* Adjust based on actual logo size/Figma */
+  width: auto;
+}
+
+.logoText {
+  /* font-family: "Anonymous Pro", monospace; From Figma style_SBOCOL */
+  font-family: "Anonymous Pro", monospace;
+  font-weight: 400; /* From Figma style_SBOCOL */
+  font-size: 1.5rem; /* 24px from Figma style_SBOCOL */
+  color: #FFFFFF; /* From Figma fill_WKO67S */
+  margin-left: 0.75rem; /* Space between image and text */
+}
+
 
 .nav {
   display: flex;
-  gap: 1.5rem; /* Adjust gap based on Figma */
+  gap: 2.5rem; /* Adjust gap based on Figma */
 }
 
 .navLink {
   text-decoration: none;
-  color: #333; /* Example color, adjust based on Figma */
-  font-weight: 500; /* Example font weight, adjust based on Figma */
-  font-size: 1rem; /* Example font size, adjust based on Figma */
+  /* font-family: "Anonymous Pro", monospace; From Figma style_SCRYOL */
+  font-family: "Anonymous Pro", monospace;
+  font-weight: 400; /* From Figma style_SCRYOL */
+  font-size: 1rem; /* 16px From Figma style_SCRYOL */
+  color: #FFFFFF; /* From Figma fill_WKO67S */
   transition: color 0.2s ease-in-out;
 }
 
 .navLink:hover {
-  color: #007bff; /* Example hover color, adjust based on Figma */
+  color: #a0a0a0; /* Slightly dimmed hover effect */
+}
+
+/* Add active link styling if needed */
+.activeNavLink {
+  /* Example: Add underline or different color */
+  /* text-decoration: underline; */
+  /* color: #cccccc; */
 }
