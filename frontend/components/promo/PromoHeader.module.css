@@ -1,8 +1,10 @@
 /* Styles for PromoHeader based on Figma Frames (e.g., 2034:97) */
 .header {
   display: flex;
-  justify-content: space-between;
+  /* justify-content: space-between; /* Changed to align left */
+  justify-content: flex-start; /* Align logo and nav to the left */
   align-items: center;
+  gap: 3rem; /* Add gap between logo container and nav */
   padding: 1.5rem 5rem; /* Adjust padding based on Figma */
   background-color: #212121; /* Dark background from Figma */
   border-bottom: 1px solid #444; /* Subtle border */
@@ -40,12 +42,17 @@
   font-family: "Anonymous Pro", monospace;
   font-weight: 400; /* From Figma style_SCRYOL */
   font-size: 1rem; /* 16px From Figma style_SCRYOL */
+  background-color: transparent; /* Default transparent background */
+  padding: 0.5rem 1rem; /* Add padding for button appearance */
+  border-radius: 5px; /* Add border-radius for button appearance */
   color: #FFFFFF; /* From Figma fill_WKO67S */
   transition: color 0.2s ease-in-out;
 }
 
 .navLink:hover {
-  color: #a0a0a0; /* Slightly dimmed hover effect */
+  /* color: #a0a0a0; /* Slightly dimmed hover effect - Replaced by background */
+  background-color: #555555; /* Grey background on hover */
+  color: #FFFFFF; /* Ensure text remains white on hover */
 }
 
 /* Add active link styling if needed */

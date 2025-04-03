@@ -1,9 +1,11 @@
 import React from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router'; // Import useRouter
 import LoginForm from '../components/auth/LoginForm'; // Adjust path if necessary
 import styles from '../styles/Login.module.css'; // Adjust path if necessary
 
 const LoginPage: React.FC = () => {
+  const router = useRouter(); // Initialize router
   // Placeholder function for handling email submission from LoginForm
   const handleLoginSubmit = (email: string) => {
     console.log('Login attempt with email:', email);
@@ -24,11 +26,18 @@ const LoginPage: React.FC = () => {
         <link href="https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Inter:wght@300&display=swap" rel="stylesheet" />
       </Head>
 
+      {/* Back Button */}
+      <button onClick={() => router.back()} className={styles.backButton}>
+        &larr; Back
+      </button>
+
       <h1 className={styles.title}>Selkie</h1>
 
       <LoginForm onEmailSubmit={handleLoginSubmit} />
 
       {/* Optional: Add a footer or other elements outside the login box if needed */}
+      {/* Example: Link to go back home explicitly if router.back() isn't sufficient */}
+      {/* <Link href="/" legacyBehavior><a className={styles.homeLink}>Go Home</a></Link> */}
     </div>
   );
 };

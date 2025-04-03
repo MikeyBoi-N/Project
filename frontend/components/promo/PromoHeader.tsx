@@ -10,15 +10,17 @@ const PromoHeader: React.FC = () => {
         <Image
           src="/images/promo/selkie_logo_promo.png"
           alt="Selkie Logo"
-          width={150} // Adjust width as needed based on Figma
-          height={50} // Adjust height as needed based on Figma
+          width={50} // Set a base width, actual size controlled by height/CSS potentially
+          height={30} // Set height based on typical logo size/Figma inspection
           priority // Preload the logo as it's likely LCP
         />
+        <span className={styles.logoText}>Selkie</span>
       </div>
       <nav className={styles.nav}>
-        <Link href="/djinn" legacyBehavior><a className={styles.navLink}>Djinn</a></Link>
-        <Link href="/ghost" legacyBehavior><a className={styles.navLink}>Ghost</a></Link>
-        <Link href="/argos" legacyBehavior><a className={styles.navLink}>Argos</a></Link>
+        <Link href="/" legacyBehavior><a className={styles.navLink}>Home</a></Link> {/* Added Home link */}
+        <Link href="/about/djinn" legacyBehavior><a className={styles.navLink}>Djinn</a></Link> {/* Updated path */}
+        <Link href="/about/ghost" legacyBehavior><a className={styles.navLink}>Ghost</a></Link> {/* Updated path */}
+        <Link href="/about/argos" legacyBehavior><a className={styles.navLink}>Argos</a></Link> {/* Updated path */}
       </nav>
     </header>
   );
