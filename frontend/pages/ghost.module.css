@@ -1,0 +1,44 @@
+/* Styles similar to djinn.module.css, adjust values based on Ghost Figma design */
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.mainContent {
+  flex-grow: 1;
+  padding: 2rem 4rem; /* Adjust padding based on Figma */
+  background-color: #ffffff; /* Example background, adjust based on Figma */
+}
+
+.heroSection {
+  display: flex;
+  align-items: center;
+  gap: 3rem; /* Adjust gap based on Figma */
+  margin-bottom: 3rem; /* Adjust margin based on Figma */
+}
+
+.textContainer {
+  flex: 1;
+}
+
+.textContainer h1 {
+  font-size: 2.5rem; /* Adjust based on Figma */
+  margin-bottom: 1rem; /* Adjust based on Figma */
+  color: #212529; /* Example color, adjust based on Figma */
+  font-weight: 600; /* Example weight, adjust based on Figma */
+}
+
+.textContainer p {
+  font-size: 1.1rem; /* Adjust based on Figma */
+  line-height: 1.6; /* Adjust based on Figma */
+  color: #495057; /* Example color, adjust based on Figma */
+  margin-bottom: 1.5rem; /* Adjust based on Figma */
+}
+
+.imageContainer {
+  flex: 1;
+  text-align: center; /* Or adjust alignment based on Figma */
+}
+
+/* Add more styles for other sections/elements based on Figma */
