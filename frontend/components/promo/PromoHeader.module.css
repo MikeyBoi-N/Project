@@ -1,0 +1,29 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem; /* Adjust padding based on Figma */
+  background-color: #f8f9fa; /* Example background, adjust based on Figma */
+  border-bottom: 1px solid #e0e0e0; /* Example border, adjust based on Figma */
+}
+
+.logoContainer {
+  /* Add styles if needed */
+}
+
+.nav {
+  display: flex;
+  gap: 1.5rem; /* Adjust gap based on Figma */
+}
+
+.navLink {
+  text-decoration: none;
+  color: #333; /* Example color, adjust based on Figma */
+  font-weight: 500; /* Example font weight, adjust based on Figma */
+  font-size: 1rem; /* Example font size, adjust based on Figma */
+  transition: color 0.2s ease-in-out;
+}
+
+.navLink:hover {
+  color: #007bff; /* Example hover color, adjust based on Figma */
+}
