@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 
 from .auth import router as auth_router # Import the auth router
+# from .kappa import router as kappa_router # TODO: Uncomment when Kappa service is implemented
+# from .djinn import router as djinn_router # TODO: Uncomment when Djinn service is implemented
+# from .ghost import router as ghost_router # TODO: Uncomment when Ghost service is implemented
+# from .tesseract import router as tesseract_router # TODO: Uncomment when Tesseract service is implemented
 from .db.session import get_driver, close_driver # Import driver lifecycle functions
 from contextlib import asynccontextmanager
 import logging
@@ -35,6 +39,10 @@ async def health_check():
 # Add routers for different modules (Auth, Kappa, etc.) later
 app.include_router(auth_router.router) # Include the authentication router
 # TODO: Add routers for Kappa, etc. later
+# app.include_router(kappa_router.router) # TODO: Uncomment when Kappa service is implemented
+# app.include_router(djinn_router.router) # TODO: Uncomment when Djinn service is implemented
+# app.include_router(ghost_router.router) # TODO: Uncomment when Ghost service is implemented
+# app.include_router(tesseract_router.router) # TODO: Uncomment when Tesseract service is implemented
 
 if __name__ == "__main__":
     # This block is for running locally without uvicorn command, useful for debugging
