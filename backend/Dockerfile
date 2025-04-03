@@ -1,40 +1,51 @@
-# Use an official Python runtime as a parent image
-FROM python:3.13-slim as builder
+# --- Builder Stage ---
+    FROM python:3.13 AS builder
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-
-# Install Poetry
-RUN pip install poetry==1.8.2 # Pinning poetry version for stability
-
-# Set the working directory in the container
-WORKDIR /app
-
-# Copy only necessary files for dependency installation
-COPY pyproject.toml poetry.lock* ./
-# poetry.lock might not exist yet, the '*' handles that
-
-# Install project dependencies using Poetry
-# --no-root: Don't install the project itself yet, only dependencies
-# --no-dev: Don't install development dependencies in the final image
-RUN poetry config virtualenvs.create false ; \
-    poetry install --no-interaction --no-ansi --no-root --no-dev
-
-# --- Final Stage ---
-FROM python:3.13-slim
-
-WORKDIR /app
-
-# Copy installed dependencies from the builder stage
-COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
-COPY --from=builder /usr/local/bin/uvicorn /usr/local/bin/uvicorn
-
-# Copy the rest of the application code
-COPY . /app
-
-# Expose the port the app runs on (defined in docker-compose.yml command)
-EXPOSE 8000
-
-# The command to run the app is specified in docker-compose.yml
-# CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    # Set environment variables
+    ENV PYTHONDONTWRITEBYTECODE=1 \
+        PYTHONUNBUFFERED=1
+    
+    # Install Poetry
+    RUN pip install --no-cache-dir poetry==1.8.2
+    
+    # Set working directory
+    WORKDIR /app
+    
+    # Copy dependency files
+    COPY pyproject.toml poetry.lock* ./
+    
+    # Export dependencies to requirements.txt
+    RUN poetry export -f requirements.txt --output requirements.txt --without-hashes
+    
+    # Install build dependencies for compiling packages
+    RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
+        python3-dev \
+     && apt-get clean \
+     && rm -rf /var/lib/apt/lists/*
+    
+    # Build wheels for dependencies
+    RUN pip wheel -r requirements.txt -w wheels/
+    
+    # --- Final Stage ---
+    FROM python:3.13-slim
+    
+    # Set working directory
+    WORKDIR /app
+    
+    # Copy wheels and requirements from builder
+    COPY --from=builder /app/wheels /wheels
+    COPY --from=builder /app/requirements.txt /requirements.txt
+    
+    # Install dependencies from wheels and clean up
+    RUN pip install --no-index --find-links=/wheels -r /requirements.txt \
+     && rm -rf /wheels /requirements.txt
+    
+    # Copy application code
+    COPY . /app
+    
+    # Expose port
+    EXPOSE 8000
+    
+    # Run the application
+    CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

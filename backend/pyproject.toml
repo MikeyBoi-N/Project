@@ -19,6 +19,11 @@ python-dotenv = "^1.0.1" # For loading environment variables from .env file
 # Add other core dependencies as needed
 pydantic-settings = "^2.2.1" # For loading settings from env vars
 
+pillow = "^10.3.0" # Image handling
+opencv-python-headless = "^4.9.0" # OpenCV (headless version for servers)
+scipy = "^1.13.0" # Scientific and technical computing
+numpy = "^1.26.4" # Fundamental package for numerical computation
+# TODO: Add Tesseract dependencies (e.g., Gaussian Splatting libraries, 3D processing) when needed
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0" # Testing framework
 httpx = "^0.27.0" # Async HTTP client for testing FastAPI

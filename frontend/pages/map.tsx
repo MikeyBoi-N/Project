@@ -1,24 +1,25 @@
 import React from 'react';
 import Layout from '../components/layout/Layout'; // Adjust path if needed
+import dynamic from 'next/dynamic';
 // Import map-specific styles if needed later
 // import styles from '../styles/Map.module.css';
+
+// Dynamically import the map component to avoid SSR issues with Leaflet
+const SharedMapComponent = dynamic(
+  () => import('../components/map/SharedMapComponent'),
+  { ssr: false }
+);
 
 const MapPage: React.FC = () => {
   return (
     <Layout title="Map Suite - Selkie">
-      {/* Placeholder for the main map container */}
+      {/* Main map container - using the dynamically imported component */}
       <div style={{
         position: 'absolute', // Take up full space within parent
         top: 0, left: 0, right: 0, bottom: 0,
-        backgroundColor: '#1a1a1a', // Dark placeholder background
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: '#555',
-        fontSize: '2rem',
         zIndex: 1, // Base layer
       }}>
-        Map Container Placeholder
+        <SharedMapComponent />
       </div>
 
       {/* Placeholder for Search Bar */}
