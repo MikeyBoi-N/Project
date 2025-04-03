@@ -10,12 +10,12 @@ const ArgosPage: React.FC = () => {
       <main className={styles.mainContent}>
         <section className={styles.heroSection}>
           <div className={styles.textContainer}>
-            <h1>Argos: Visualize Your Network's Landscape</h1>
-            <p>
-              Argos provides powerful network visualization and analysis tools.
-              Map dependencies, understand traffic flow, and identify potential bottlenecks.
-              Gain clarity on complex network structures with interactive graphs.
-              {/* Add more specific text from Figma Frame 2034:97 here */}
+            <h1 className={styles.title}>Argos Mission Manager: Command Your Argos Drone</h1>
+            <p className={styles.description}>
+              Named after Odysseus' famously loyal companion, our Argos drone embodies steadfast reliability. To command this advanced UAV, we developed the Argos Mission Manager – your dedicated software suite.
+            </p>
+            <p className={styles.description}>
+              This comprehensive tool provides robust flight planning and mapping, in-depth analysis of sensor data gathered by the Argos drone, and a real-time health dashboard for optimal performance. Streamline operations, ensure safety, and maximize the effectiveness of your Argos drone with its purpose-built command software.
             </p>
             {/* Add buttons or other elements from Figma if present */}
           </div>
@@ -23,8 +23,9 @@ const ArgosPage: React.FC = () => {
             <Image
               src="/images/promo/argos_promo_main.png"
               alt="Argos Promotional Image"
-              width={500} // Adjust based on Figma
-              height={400} // Adjust based on Figma
+              layout="responsive" // Use layout="responsive" or "fill" and control size with CSS
+              width={700} // Provide aspect ratio hint, actual size controlled by CSS
+              height={475} // Provide aspect ratio hint, actual size controlled by CSS
               priority
             />
           </div>
