@@ -21,11 +21,10 @@ const Home: NextPage = () => {
           Phase 1 Frontend Placeholder
         </p>
 
-        {/* Link to the login page */}
-        <div className={styles.grid}> {/* Use existing grid style or create a new one */}
-          <Link href="/login" className={styles.card}> {/* Use existing card style */}
-            <h2>Login &rarr;</h2>
-            <p>Go to the Selkie login page.</p>
+        {/* Login Button */}
+        <div className={styles.loginButtonContainer}>
+          <Link href="/login" legacyBehavior>
+            <a className={styles.loginButton}>Login</a>
           </Link>
         </div>
       </main>

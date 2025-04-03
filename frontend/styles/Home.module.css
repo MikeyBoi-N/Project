@@ -1,28 +1,36 @@
 .container {
-  padding: 0 2rem;
+  padding: 0; /* Remove padding if applying background to container */
+  background-color: #212121; /* Dark theme background */
+  color: #FFFFFF; /* Default text color */
+  min-height: 100vh; /* Ensure container takes full height */
+  display: flex; /* Use flexbox for centering */
+  flex-direction: column;
 }
 
 .main {
-  min-height: 100vh;
-  padding: 4rem 0;
+  /* min-height: 100vh; /* Moved to container */
+  padding: 4rem 2rem; /* Adjust padding */
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  justify-content: center; /* Center content vertically */
+  align-items: center; /* Center content horizontally */
+  width: 100%; /* Ensure main takes width */
 }
 
 .footer {
   display: flex;
   flex: 1;
   padding: 2rem 0;
-  border-top: 1px solid #eaeaea;
+  border-top: 1px solid #444; /* Darker border */
   justify-content: center;
   align-items: center;
+  color: #a0a0a0; /* Dimmed footer text */
+  width: 100%; /* Ensure footer takes width */
 }
 
 .title a {
-  color: #0070f3;
+  color: #FFFFFF; /* White title */
   text-decoration: none;
 }
 
@@ -35,7 +43,7 @@
 .title {
   margin: 0;
   line-height: 1.15;
-  font-size: 4rem;
+  font-size: 3.5rem; /* Slightly smaller title */
 }
 
 .title,
@@ -46,5 +54,71 @@
 .description {
   margin: 4rem 0;
   line-height: 1.5;
+  font-size: 1.25rem; /* Slightly smaller description */
+  color: #cccccc; /* Lighter grey description */
+}
+
+/* Remove default card/grid styles if they conflict */
+.grid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 800px;
+  margin-top: 3rem;
+}
+
+.card {
+  /* Remove default card styles if needed */
+  margin: 1rem;
+  padding: 1.5rem;
+  text-align: left;
+  color: inherit;
+  text-decoration: none;
+  border: 1px solid #eaeaea;
+  border-radius: 10px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+  width: 45%;
+}
+
+.card:hover,
+.card:focus,
+.card:active {
+  color: #0070f3;
+  border-color: #0070f3;
+}
+
+.card h2 {
+  margin: 0 0 1rem 0;
   font-size: 1.5rem;
+}
+
+.card p {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.5;
+}
+
+
+/* Styles for the new Login Button */
+.loginButtonContainer {
+  margin-top: 2.5rem; /* Space above the button */
+}
+
+.loginButton {
+  display: inline-block;
+  background-color: #555555; /* Grey background */
+  color: #FFFFFF;
+  padding: 0.8rem 1.8rem;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.loginButton:hover {
+  background-color: #777777; /* Lighter grey on hover */
 }

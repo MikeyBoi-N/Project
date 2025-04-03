@@ -14,6 +14,26 @@
   color: #FFFFFF; /* Default white text */
 }
 
+.backButton {
+  position: absolute;
+  top: 20px; /* Adjust positioning as needed */
+  left: 20px; /* Adjust positioning as needed */
+  background: none;
+  border: none;
+  color: #FFFFFF;
+  font-family: 'Anonymous Pro', monospace;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 10px;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.backButton:hover {
+  color: #cccccc; /* Lighter grey on hover */
+}
+
+
 .title {
   font-weight: 700;
   font-size: 64px;
