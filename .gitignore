@@ -167,3 +167,7 @@ Thumbs.db
 # Docker
 docker-compose.override.yml
 .dockerignore
+
+# Temporary files
+*.gz
+.frontend/.next/cache/*
