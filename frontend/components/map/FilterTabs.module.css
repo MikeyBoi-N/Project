@@ -1,0 +1,38 @@
+.tabsContainer {
+    display: flex;
+    align-items: center;
+    background-color: rgba(217, 217, 217, 0.8); /* Figma background D9D9D9 with 80% opacity */
+    padding: 6px; /* Adjust based on visual spacing in Figma */
+    border-radius: 16.5px; /* Figma border radius */
+    gap: 6px; /* Space between tabs */
+    position: absolute; /* Position it above the map */
+    top: 20px; /* Adjust as needed */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Center horizontally */
+    z-index: 1001; /* Ensure above map, same level as bottom cluster */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.tabButton {
+    padding: 8px 16px; /* Adjust padding based on Figma */
+    border: none;
+    background-color: transparent; /* Default background */
+    color: rgba(0, 0, 0, 0.72); /* Figma text color #000000 72% */
+    font-family: 'Inter', sans-serif; /* Figma font */
+    font-size: 14px; /* Figma font size */
+    font-weight: 600; /* Figma font weight (Semi Bold) */
+    border-radius: 12px; /* Figma inner button radius */
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    white-space: nowrap; /* Prevent wrapping */
+}
+
+.tabButton:hover {
+    background-color: rgba(0, 0, 0, 0.05); /* Subtle hover */
+}
+
+.tabButton.active {
+    background-color: #ffffff; /* Figma active background #FFFFFF */
+    color: rgba(0, 0, 0, 0.8); /* Slightly darker text for active? Adjust if needed */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle shadow for active tab */
+}
