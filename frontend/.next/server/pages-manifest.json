@@ -2,9 +2,7 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/login": "pages/login.js",
   "/djinn": "pages/djinn.js",
-  "/": "pages/index.js",
-  "/about/djinn": "pages/about/djinn.js",
-  "/about/ghost": "pages/about/ghost.js"
+  "/tesseract": "pages/tesseract.js",
+  "/profile": "pages/profile.js"
 }
