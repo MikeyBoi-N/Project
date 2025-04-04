@@ -114,3 +114,21 @@
     align-items: center;
     justify-content: center;
 }
+
+/* --- Custom Detect Button --- */
+.detectButton {
+  background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent white */
+  padding: 10px 15px;
+  border-radius: 25px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: #555;
+  font-size: 0.9em;
+  text-align: center;
+  border: none; /* Add border:none for consistency */
+  cursor: pointer; /* Add cursor:pointer */
+  /* Positioning will be handled elsewhere */
+}
+
+.detectButton:hover { /* Add a basic hover effect */
+   background-color: rgba(255, 255, 255, 0.9);
+}

@@ -187,3 +187,25 @@
 .dropdownItem:hover {
   background-color: #555; /* Hover effect */
 }
+
+
+/* Styles for Sidebar Section Titles */
+.sidebarScrollableArea h3 {
+  margin-top: 15px; /* Add space above main section titles */
+  margin-bottom: 8px; /* Space below title */
+  font-size: 1.1em; /* Example size */
+  font-weight: bold;
+}
+
+.sidebarScrollableArea h4 {
+  margin-top: 10px; /* Add space above sub-section titles */
+  margin-bottom: 5px; /* Space below title */
+  font-size: 1em; /* Example size */
+  font-weight: normal;
+  color: #ccc; /* Slightly lighter color for sub-titles */
+}
+
+/* Remove top margin for the very first title */
+.sidebarScrollableArea > h3:first-of-type {
+  margin-top: 0;
+}

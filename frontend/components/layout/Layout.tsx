@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image'; // Import Image component
 import { useRouter } from 'next/router';
-import Sidebar from './Sidebar'; // Import the Sidebar component
+import Sidebar, { SidebarProps } from './Sidebar'; // Import Sidebar and its props type
 import { FaUserCircle, FaCog } from 'react-icons/fa';
 import styles from '../../styles/Layout.module.css'; // Adjust path if needed
 
@@ -11,9 +11,10 @@ interface LayoutProps {
   children: ReactNode;
   title?: string; // Optional title for the page head
   hideSidebar?: boolean; // Optional prop to hide the sidebar
+  sidebarProps?: Partial<SidebarProps>; // Optional props to pass down to the Sidebar
 }
 
-const Layout: React.FC<LayoutProps> = ({ children, title = 'Selkie', hideSidebar }) => {
+const Layout: React.FC<LayoutProps> = ({ children, title = 'Selkie', hideSidebar, sidebarProps }) => {
   const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null); // Ref for the dropdown container
@@ -113,7 +114,8 @@ const Layout: React.FC<LayoutProps> = ({ children, title = 'Selkie', hideSidebar
       </header>
 
       <div className={styles.mainContentArea}>
-        {!hideSidebar && <Sidebar />}
+        {/* Render Sidebar only if not hidden AND sidebarProps are provided */}
+        {!hideSidebar && sidebarProps && <Sidebar {...sidebarProps as SidebarProps} />}
         <main className={styles.pageContent}>
           {children} {/* Page-specific content goes here */}
         </main>
