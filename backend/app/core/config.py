@@ -29,10 +29,10 @@ class Settings(BaseSettings):
     MINIO_BUCKET_NAME: str = "selkie-documents" # Example bucket name
     MINIO_USE_SSL: bool = False # Set to True if MinIO uses HTTPS
 
-    # --- Google OAuth Settings (Add when implementing Google Login) ---
-    # GOOGLE_CLIENT_ID: Optional[str] = None
-    # GOOGLE_CLIENT_SECRET: Optional[str] = None
-    # GOOGLE_REDIRECT_URI: Optional[AnyHttpUrl] = None # e.g., http://localhost/api/v1/auth/google/callback
+    # --- Google OAuth Settings ---
+    GOOGLE_CLIENT_ID: str
+    GOOGLE_CLIENT_SECRET: str
+    GOOGLE_REDIRECT_URI: str # e.g., http://localhost:8000/api/v1/auth/google/callback or your frontend callback handler
 
     # Pydantic Settings Configuration
     model_config = SettingsConfigDict(

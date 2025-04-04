@@ -4,10 +4,5 @@
   "/_document": "pages/_document.js",
   "/": "pages/index.js",
   "/login": "pages/login.js",
-  "/djinn": "pages/djinn.js",
-  "/tesseract": "pages/tesseract.js",
-  "/profile": "pages/profile.js",
-  "/about/djinn": "pages/about/djinn.js",
-  "/about/ghost": "pages/about/ghost.js",
-  "/about/argos": "pages/about/argos.js"
+  "/djinn": "pages/djinn.js"
 }

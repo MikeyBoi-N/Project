@@ -5,11 +5,15 @@ from .kappa import router as kappa_router
 from .djinn import router as djinn_router
 from .ghost import router as ghost_router
 from .tesseract import router as tesseract_router
+from .users import router as users_router # Import the users router
 from .db.session import get_driver, close_driver # Import driver lifecycle functions
 from contextlib import asynccontextmanager
 import logging
 from pydantic import BaseModel
 from typing import List, Tuple, Optional
+from fastapi import Depends # Add Depends
+from .auth.security import get_current_user_from_cookie # Import the dependency
+from .auth import schemas as auth_schemas # Import auth schemas
 
 # Configure basic logging
 logging.basicConfig(level=logging.DEBUG) # Set level to DEBUG
@@ -104,6 +108,19 @@ app.include_router(kappa_router.router)
 app.include_router(djinn_router.router)
 app.include_router(ghost_router.router)
 app.include_router(tesseract_router.router)
+app.include_router(users_router.router) # Include the users router
+
+
+# --- Protected Endpoint Example ---
+@app.get("/protected", response_model=dict, tags=["Example Protected Route"])
+async def read_protected_route(
+    current_user: auth_schemas.User = Depends(get_current_user_from_cookie)
+):
+    """
+    An example protected route that requires authentication via JWT cookie.
+    Returns a message including the logged-in user's email.
+    """
+    return {"message": f"Hello {current_user.email}, you have accessed a protected route!"}
 
 if __name__ == "__main__":
     # This block is for running locally without uvicorn command, useful for debugging

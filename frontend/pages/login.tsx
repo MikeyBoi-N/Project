@@ -1,26 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react'; // Import useState
 import Head from 'next/head';
-import { useRouter } from 'next/router'; // Import useRouter
+import { useRouter } from 'next/router';
 import Link from 'next/link';
-import LoginForm from '../components/auth/LoginForm'; // Adjust path if necessary
-import styles from '../styles/Login.module.css'; // Adjust path if necessary
+import LoginForm from '../components/auth/LoginForm';
+import RegisterForm from '../components/auth/RegisterForm'; // Import RegisterForm
+import styles from '../styles/Login.module.css';
 
 const LoginPage: React.FC = () => {
-  const router = useRouter(); // Initialize router
-  // Placeholder function for handling email submission from LoginForm
-  const handleLoginSubmit = (email: string) => {
-    console.log('Login attempt with email:', email);
-    // Here you would typically make an API call to your backend
-    // e.g., fetch('/api/auth/login', { method: 'POST', body: JSON.stringify({ email }) })
-    //      .then(response => response.json())
-    //      .then(data => { /* handle token, redirect */ })
-    //      .catch(error => { /* handle error */ });
-  };
+  const router = useRouter();
+  const [isRegistering, setIsRegistering] = useState(false); // State to track view
+
+  const switchToRegister = () => setIsRegistering(true);
+  const switchToLogin = () => setIsRegistering(false);
 
   return (
     <div className={styles.container}>
       <Head>
-        <title>Login - Selkie</title>
+        <title>{isRegistering ? 'Register' : 'Login'} - Selkie</title> {/* Dynamic title */}
         {/* Link to Google Fonts if Anonymous Pro/Inter aren't loaded globally */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -28,22 +24,43 @@ const LoginPage: React.FC = () => {
       </Head>
 
       {/* Close Button */}
-      <button onClick={() => router.back()} className={styles.closeButton} title="Close"> {/* Changed class name and text */}
-        &times; {/* Multiplication sign for 'X' */}
+      <button onClick={() => router.back()} className={styles.closeButton} title="Close">
+        &times;
       </button>
 
       <h1 className={styles.title}>Selkie</h1>
 
-      <LoginForm onEmailSubmit={handleLoginSubmit} />
+      {/* Conditionally render Login or Register Form */}
+      {isRegistering ? (
+        <RegisterForm switchToLogin={switchToLogin} />
+      ) : (
+        <LoginForm /> // LoginForm doesn't need switchToRegister prop directly
+      )}
 
-      <Link href="/djinn" className={styles.guestLink}> {/* Updated link, removed legacyBehavior and <a> */}
+      {/* Switch link/button - Placed outside the form components */}
+      <p className={styles.switchFormText}> {/* Added a style for this text */}
+        {isRegistering ? (
+          <>
+            Already have an account?{' '}
+            <button onClick={switchToLogin} className={styles.switchButton}>
+              Log In
+            </button>
+          </>
+        ) : (
+          <>
+            Don't have an account?{' '}
+            <button onClick={switchToRegister} className={styles.switchButton}>
+              Register
+            </button>
+          </>
+        )}
+      </p>
+
+      <Link href="/djinn" className={styles.guestLink}>
         continue as guest
       </Link>
 
-
       {/* Optional: Add a footer or other elements outside the login box if needed */}
-      {/* Example: Link to go back home explicitly if router.back() isn't sufficient */}
-      {/* <Link href="/" legacyBehavior><a className={styles.homeLink}>Go Home</a></Link> */}
     </div>
   );
 };

@@ -2,24 +2,19 @@ import React from 'react';
 import styles from '../../styles/Login.module.css'; // Adjust path as needed
 import GoogleGIcon from '../icons/GoogleGIcon'; // Import the SVG icon component
 
-interface GoogleLoginButtonProps {
-  onClick?: () => void; // Optional click handler prop
-}
-
-const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ onClick }) => {
-  const handleClick = () => {
-    console.log('Google Login button clicked (placeholder)');
-    if (onClick) {
-      onClick();
-    }
-    // TODO: Implement actual Google OAuth flow
-  };
+// No props needed anymore
+const GoogleLoginButton: React.FC = () => {
+  // The backend URL for initiating Google OAuth
+  // Assuming /api/* is proxied to the backend or they share an origin.
+  // If not, use the full backend URL: e.g., 'http://localhost:8000/auth/google/login'
+  const googleLoginUrl = '/api/auth/google/login';
 
   return (
-    <button type="button" className={styles.googleButton} onClick={handleClick}>
+    // Changed from button to anchor tag
+    <a href={googleLoginUrl} className={styles.googleButton}>
       <GoogleGIcon style={{ marginRight: '10px', verticalAlign: 'middle' }} /> {/* Use the SVG icon */}
       Continue with Google
-    </button>
+    </a>
   );
 };
 

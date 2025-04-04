@@ -10,6 +10,7 @@ class TokenData(BaseModel):
     """Schema for data encoded within the JWT."""
     email: Optional[EmailStr] = None
     # Add other relevant user identifiers if needed, e.g., user_id
+    user_id: Optional[str] = None # Add user ID
 
 class UserBase(BaseModel):
     """Base schema for User properties."""
@@ -19,6 +20,11 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     """Schema for creating a new user via email/password."""
     password: str
+
+
+class UserCreateGoogle(UserBase):
+    """Schema for creating a user from Google OAuth info."""
+    google_id: str
 
 class UserLogin(BaseModel):
     """Schema for user login via email/password."""
