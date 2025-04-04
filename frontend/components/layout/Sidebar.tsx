@@ -8,11 +8,9 @@ const Sidebar: React.FC = () => {
 
   // Define sidebar links based on the screenshot/Figma
   // Using placeholder paths for now
-  const navItems = [
-    { name: 'Djinn', path: '/map' }, // Assuming /map is the Djinn page
-    { name: 'Tesseract', path: '/tesseract' },
-    { name: 'Ghost', path: '/ghost' },
-  ];
+  // Navigation items removed as per requirement to move them to header dropdown.
+  // Sidebar structure remains for potential future use.
+  const navItems: { name: string; path: string }[] = [];
 
   return (
     <nav className={styles.sidebar}>

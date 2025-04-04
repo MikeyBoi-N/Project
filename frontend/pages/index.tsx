@@ -36,7 +36,7 @@ const Home: NextPage = () => {
           </h1>
           {/* Updated Link structure for modern Next.js */}
           {/* Conditional Link */}
-          <Link href={isAuthenticated ? "/map" : "/login"} className={styles.ctaButton}>
+          <Link href={isAuthenticated ? "/djinn" : "/login"} className={styles.ctaButton}> {/* Updated link from /map to /djinn */}
             Start Analyzing
           </Link>
           {/* Image container moved inside contentArea */}

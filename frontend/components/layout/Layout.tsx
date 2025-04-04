@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState, useEffect, useRef } from 'react'; // Added useState, useEffect, useRef
 import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image'; // Import Image component
@@ -15,7 +15,49 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children, title = 'Selkie', hideSidebar }) => {
   const router = useRouter();
-  const allowedPaths = ['/map', '/tesseract', '/ghost', '/profile']; // Add paths where icons should be visible
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null); // Ref for the dropdown container
+
+  // --- Dynamic Header Text Logic ---
+  const toolPaths: { [key: string]: string } = {
+    '/djinn': 'Djinn',
+    '/argos': 'Argos',
+    '/ghost': 'Ghost',
+    '/tesseract': 'Tesseract',
+  };
+  const currentPath = router.pathname;
+  const isToolPage = Object.keys(toolPaths).includes(currentPath);
+  const headerText = isToolPage ? toolPaths[currentPath] : 'Selkie';
+  // const isClickableHeader = !isToolPage; // Header is now always clickable
+
+  // --- Dropdown Toggle ---
+  const toggleDropdown = () => {
+    // Always allow toggling now
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  // --- Click Outside Logic ---
+   useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+
+
+  // --- Icon Visibility Logic (Adjusted if needed, keeping original logic for now) ---
+  const allowedPaths = ['/djinn', '/tesseract', '/ghost', '/profile']; // Updated /map to /djinn
   const showIcons = allowedPaths.includes(router.pathname);
   return (
     <div className={styles.layoutContainer}>
@@ -29,7 +71,7 @@ const Layout: React.FC<LayoutProps> = ({ children, title = 'Selkie', hideSidebar
       </Head>
 
       <header className={styles.header}>
-          <Link href="/map" passHref>
+          <Link href="/djinn" passHref> {/* Updated link from /map to /djinn */}
         <div className={styles.headerLogo}> {/* Keep div for margin/alignment if needed */}
           <Image
             src="/icons/Selkie Logo White.png" // Path relative to public folder
@@ -40,7 +82,26 @@ const Layout: React.FC<LayoutProps> = ({ children, title = 'Selkie', hideSidebar
           />
         </div>
           </Link>
-        <h1 className={styles.headerTitle}>Selkie</h1>
+        {/* --- Header Title & Dropdown Trigger --- */}
+        <div className={styles.headerTitleContainer} ref={dropdownRef}> {/* Added ref here */}
+          <h1
+            className={`${styles.headerTitle} ${styles.clickableHeader}`} // Always apply clickable style
+            onClick={toggleDropdown}
+            style={{ cursor: 'pointer' }} // Always use pointer cursor
+          >
+            {headerText}
+          </h1>
+          {/* --- Dropdown Menu --- */}
+          {isDropdownOpen && ( // Removed isClickableHeader check
+            <div className={styles.dropdownMenu}>
+              <Link href="/djinn" className={styles.dropdownItem} onClick={() => setIsDropdownOpen(false)}>Djinn</Link>
+              <Link href="/argos" passHref><div className={styles.dropdownItem} onClick={() => setIsDropdownOpen(false)}>Argos</div></Link>
+              <Link href="/ghost" passHref><div className={styles.dropdownItem} onClick={() => setIsDropdownOpen(false)}>Ghost</div></Link>
+              <Link href="/tesseract" passHref><div className={styles.dropdownItem} onClick={() => setIsDropdownOpen(false)}>Tesseract</div></Link>
+            </div>
+          )}
+        </div>
+        {/* --- Header Icons (Keep original logic) --- */}
         {showIcons && (
           <div className={styles.headerIcons}> {/* Container for icons */}
             <Link href="/profile" passHref>
