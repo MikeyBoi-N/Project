@@ -21,7 +21,7 @@ const GhostPage: React.FC = () => {
           </div>
           <div className={styles.imageContainer}>
             <Image
-              src="/images/promo/ghost_promo_main.png"
+              src="/images/promo/ghost/ghost_promo_main.png"
               alt="Ghost Promotional Image"
               layout="responsive" // Use layout="responsive" or "fill" and control size with CSS
               width={700} // Provide aspect ratio hint, actual size controlled by CSS - Adjust ratio if needed based on ghost_promo_main.png

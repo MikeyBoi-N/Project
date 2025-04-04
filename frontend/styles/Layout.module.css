@@ -6,7 +6,7 @@
   height: 100vh; /* Use viewport height */
   background-color: #212121; /* Main background */
   color: #FFFFFF;
-  overflow: hidden; /* Prevent scroll on the main container */
+  overflow: auto; /* Allow scrolling on the main container */
 }
 
 .header {
@@ -36,7 +36,7 @@
 .mainContentArea {
   display: flex;
   flex-grow: 1; /* Takes remaining vertical space */
-  overflow: hidden; /* Prevent main area from causing scroll */
+  overflow: auto; /* Allow scrolling */
 }
 
 /* Styles for the ResizableBox container */
@@ -116,7 +116,7 @@
 .pageContent {
   flex-grow: 1; /* Takes remaining horizontal space */
   position: relative; /* Needed for absolutely positioned children like overlays */
-  /* overflow: auto; */ /* Let inner components manage their own scroll if needed */
+  overflow: auto; /* Enable scrolling at this level */
   /* padding: 20px; */ /* Let inner components manage their own padding */
   display: flex; /* Use flexbox to allow child to grow */
   flex-direction: column; /* Stack children vertically */
