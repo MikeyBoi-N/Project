@@ -74,6 +74,8 @@
 .pageContent {
   flex-grow: 1; /* Takes remaining horizontal space */
   position: relative; /* Needed for absolutely positioned children like overlays */
-  overflow: auto; /* Allow scrolling within the content area if needed, but not the whole page */
-  padding: 20px; /* Add some padding */
+  /* overflow: auto; Removed to allow map to fully control its view */
+  /* padding: 20px; Removed to allow content like maps to fill the space */
+  display: flex; /* Use flexbox to allow child to grow */
+  flex-direction: column; /* Stack children vertically */
 }
