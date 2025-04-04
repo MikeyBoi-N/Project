@@ -79,3 +79,24 @@
   display: flex; /* Use flexbox to allow child to grow */
   flex-direction: column; /* Stack children vertically */
 }
+
+/* Styles for Header Icons */
+.headerIcons {
+  display: flex;
+  align-items: center;
+  margin-left: auto; /* Push icons to the right */
+  gap: 15px; /* Space between icons */
+}
+
+.icon {
+  font-size: 20px; /* Adjust size as needed */
+  color: #FFFFFF; /* Ensure icons are white */
+  cursor: pointer; /* Indicate clickable settings icon */
+}
+
+/* Specific styling for the icon within the Link if needed */
+.headerIcons a {
+  color: inherit; /* Ensure link doesn't change icon color */
+  display: flex; /* Align icon correctly within link */
+  align-items: center;
+}
