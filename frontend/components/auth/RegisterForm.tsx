@@ -92,17 +92,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin }) => {
                     required
                     disabled={loading}
                 />
-                <button type="submit" className={styles.emailButton} disabled={loading}>
+                <button type="submit" className={styles.registerButtonAsFilter} disabled={loading}>
                     {loading ? 'Registering...' : 'Create Account'}
                 </button>
             </form>
 
-            <p className={styles.switchForm}> {/* Style for switching forms */}
-                Already have an account?{' '}
-                <button onClick={switchToLogin} className={styles.switchButton}>
-                    Log In
-                </button>
-            </p>
+            {/* Removed duplicate switch link - handled in login.tsx */}
 
             <p className={styles.terms}>
                 By continuing, you agree to our Terms and Usage policy, and acknowledge our Privacy Policy

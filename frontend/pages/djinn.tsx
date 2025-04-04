@@ -1,7 +1,9 @@
-import React, { useState, useRef, useCallback } from 'react'; // Added useState, useRef, useCallback
+import { useAuth } from '../context/AuthContext'; // Import useAuth
+import React, { useState, useRef, useCallback, useEffect } from 'react'; // Added useEffect
 import Layout from '../components/layout/Layout';
 import dynamic from 'next/dynamic';
 import styles from '../styles/MapPage.module.css'; // Keep using MapPage styles for now, can be refactored later if needed
+import { styleOptions } from '../components/map/LayersMenu'; // Import styleOptions array
 import LayersMenu, { defaultStyleOption, StyleOption } from '../components/map/LayersMenu'; // Import LayersMenu and types
 import { FaPlus, FaMinus, FaCompass, FaClock } from 'react-icons/fa'; // Import icons
 import type { Map } from 'leaflet'; // Import Leaflet Map type for ref
@@ -16,9 +18,31 @@ const SharedMapComponent = dynamic(
 
 const DjinnPage: React.FC = () => { // Renamed from MapPage
   // State for the currently selected map style
+  const { isGuest } = useAuth(); // Get guest status
   const [selectedStyle, setSelectedStyle] = useState<StyleOption>(defaultStyleOption);
   // Ref to hold the Leaflet map instance
   const mapRef = useRef<Map | null>(null);
+
+  const guestStyleKey = 'guestMapStyleId'; // Key for sessionStorage
+
+  // Effect to load guest style from sessionStorage
+  useEffect(() => {
+    // Only run if guest status is confirmed (not loading) and is actually guest
+    if (isGuest === true) { // Explicit check for true
+      const savedStyleId = sessionStorage.getItem(guestStyleKey);
+      if (savedStyleId) {
+        const foundStyle = styleOptions.find((style: StyleOption) => style.id === savedStyleId); // Add type annotation
+        if (foundStyle) {
+          setSelectedStyle(foundStyle);
+          console.log('Restored guest map style:', foundStyle.name); // Optional logging
+        } else {
+          console.warn(`Saved guest style ID "${savedStyleId}" not found in options.`);
+          // Optionally remove invalid key: sessionStorage.removeItem(guestStyleKey);
+        }
+      }
+    }
+    // Dependency: Run when guest status is determined/changes
+  }, [isGuest]);
 
   // Callback to update the selected style
   const handleStyleChange = useCallback((style: StyleOption) => {

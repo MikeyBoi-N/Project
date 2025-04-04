@@ -162,3 +162,33 @@
   color: #FFFFFF; /* White on hover */
   text-decoration: underline;
 }
+
+/* Style for Register button to match MapPage filter buttons */
+.registerButtonAsFilter {
+  /* Base styles from .filterButton */
+  padding: 5px 10px;
+  background-color: #0e0e0e;
+  border: 1px solid #0e0e0e; /* Added explicit border */
+  color: #797979;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 0.9rem;
+
+  /* Explicit overrides/additions needed for consistency */
+  display: inline-flex; /* Use inline-flex to allow natural width */
+  align-items: center;
+  justify-content: center;
+  font-family: 'Anonymous Pro', monospace; /* Keep consistent font */
+  font-weight: normal; /* Reset font-weight from buttonBase */
+  width: auto; /* Allow button to size based on content + padding */
+  text-align: center;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease; /* Add transitions */
+  box-sizing: border-box;
+  margin-bottom: 25px; /* Keep margin from original emailButton */
+}
+
+.registerButtonAsFilter:hover {
+  background-color: #222222;
+  border-color: #222222;
+  color: #bdbdbd; /* Slightly lighter grey text on hover */
+}
