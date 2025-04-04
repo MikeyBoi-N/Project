@@ -9,7 +9,7 @@
     gap: 10px; /* Space between Layers menu and Tool Nav */
 }
 
-.toolNavContainer {
+.toolNavContainer { /* Container for the tool navigation in bottom right*/
     display: flex;
     flex-direction: column;
     gap: 5px; /* Space between tool buttons */
@@ -42,4 +42,75 @@
 .toolButton span { /* For text like '3D' */
     font-weight: bold;
     font-size: 0.9rem;
+}
+
+
+/* --- Individual Top-Left Overlays --- */
+.filterButtonsOverlay,
+.searchBarOverlay,
+.contextWindowOverlay {
+    position: absolute;
+    left: 20px;
+    z-index: 1000; /* Ensure they are above map tiles */
+    /* Individual top positioning will stack them */
+    /* Optional: Add background/padding if needed per component wrapper */
+    /* background-color: rgba(255, 255, 255, 0.8); */
+    /* padding: 5px; */
+    /* border-radius: 4px; */
+}
+
+.filterButtonsOverlay {
+    top: 20px; /* Position the first element */
+}
+
+.searchBarOverlay {
+    top: 70px; /* Adjust based on FilterButtons height + desired gap */
+    /* Example: Assuming FilterButtons takes ~40px + 10px gap */
+}
+
+.contextWindowOverlay {
+    top: 120px; /* Adjust based on SearchBar height + desired gap */
+     /* Example: Assuming SearchBar takes ~40px + 10px gap */
+}
+
+/* --- Filter Buttons --- */
+.filterButtonsContainer {
+    display: flex;
+    flex-wrap: wrap; /* Allow buttons to wrap */
+    gap: 12px;
+}
+
+.filterButton {
+    padding: 5px 10px;
+    background-color: #0e0e0e;
+    border-color: #0e0e0e;
+    color: #797979; /* text color #333333 */
+    border-radius: 7px; /* Pill shape */
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.filterButton:hover {
+    background-color: #222222;
+    border-color: #222222
+}
+
+.filterButton.selected {
+    background-color: #474747; /* Example selected color */
+    border-color: #474747;
+    color: white; /* Example selected text color */
+}
+
+/* --- Context Window Placeholder --- */
+.contextWindowPlaceholder {
+    padding: 10px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.9rem;
+    min-height: 50px; /* Give it some size */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

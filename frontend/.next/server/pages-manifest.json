@@ -3,10 +3,5 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/": "pages/index.js",
-  "/login": "pages/login.js",
-  "/map": "pages/map.js",
-  "/about/ghost": "pages/about/ghost.js",
-  "/about/argos": "pages/about/argos.js",
-  "/about/djinn": "pages/about/djinn.js",
-  "/tesseract": "pages/tesseract.js"
+  "/map": "pages/map.js"
 }
