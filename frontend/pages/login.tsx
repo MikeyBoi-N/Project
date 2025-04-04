@@ -1,6 +1,7 @@
 import React from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router'; // Import useRouter
+import Link from 'next/link';
 import LoginForm from '../components/auth/LoginForm'; // Adjust path if necessary
 import styles from '../styles/Login.module.css'; // Adjust path if necessary
 
@@ -34,6 +35,11 @@ const LoginPage: React.FC = () => {
       <h1 className={styles.title}>Selkie</h1>
 
       <LoginForm onEmailSubmit={handleLoginSubmit} />
+
+      <Link href="/map" legacyBehavior>
+        <a className={styles.guestLink}>continue as guest</a>
+      </Link>
+
 
       {/* Optional: Add a footer or other elements outside the login box if needed */}
       {/* Example: Link to go back home explicitly if router.back() isn't sufficient */}
