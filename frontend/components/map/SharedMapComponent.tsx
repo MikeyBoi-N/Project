@@ -1,4 +1,5 @@
 import React, { useState, useEffect, MutableRefObject } from 'react'; // Added MutableRefObject
+import { useAuth } from '../../context/AuthContext'; // Import useAuth
 import { MapContainer, TileLayer, Marker, Popup, Polygon } from 'react-leaflet';
 import L, { Map } from 'leaflet'; // Added Map type
 import axios from 'axios';
@@ -45,6 +46,7 @@ interface MapFootprintData {
 // --- Props Interface ---
 interface SharedMapComponentProps {
     tileLayerInfo: StyleOption; // Receive selected style info from parent
+    // id: string; // Removed - ID is accessed via tileLayerInfo.id
     mapRef: MutableRefObject<Map | null>; // Receive ref from parent
 }
 
@@ -70,6 +72,81 @@ const SharedMapComponent: React.FC<SharedMapComponentProps> = ({ tileLayerInfo, 
     const [footprints, setFootprints] = useState<MapFootprintData[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+
+    const { isGuest } = useAuth(); // Get guest status
+    const guestViewportKey = 'guestMapViewport'; // Key for center/zoom
+    const guestStyleKey = 'guestMapStyleId'; // Key for style ID
+
+    // Effect to load map VIEWPORT state for guests from sessionStorage
+    useEffect(() => {
+        if (isGuest && mapRef.current) {
+            const savedViewportRaw = sessionStorage.getItem(guestViewportKey);
+            if (savedViewportRaw) {
+                try {
+                    const savedViewport = JSON.parse(savedViewportRaw);
+                    if (savedViewport.center && savedViewport.zoom) {
+                        mapRef.current.setView(savedViewport.center, savedViewport.zoom);
+                        logger.debug('Restored guest map viewport from sessionStorage:', savedViewport);
+                    }
+                    // Style is loaded elsewhere (e.g., LayersMenu or parent page)
+                } catch (e) {
+                    logger.error('Failed to parse guest map viewport from sessionStorage', e);
+                    sessionStorage.removeItem(guestViewportKey); // Clear corrupted data
+                }
+            }
+        }
+        // Dependency array includes mapRef.current to re-run if the map initializes later,
+        // and isGuest to run when guest status is confirmed.
+    }, [isGuest, mapRef.current]);
+
+    // Effect to save map VIEWPORT state for guests to sessionStorage
+    useEffect(() => {
+        const map = mapRef.current;
+        if (isGuest && map) {
+            const saveViewportState = () => {
+                const center = map.getCenter();
+                const zoom = map.getZoom();
+                const viewportToSave = {
+                    center: { lat: center.lat, lng: center.lng },
+                    zoom: zoom,
+                };
+                try {
+                    sessionStorage.setItem(guestViewportKey, JSON.stringify(viewportToSave));
+                    logger.debug('Saved guest map viewport to sessionStorage:', viewportToSave);
+                } catch (e) {
+                    logger.error('Failed to save guest map viewport to sessionStorage', e);
+                }
+            };
+
+            map.on('moveend', saveViewportState);
+            map.on('zoomend', saveViewportState);
+
+            // Cleanup listeners
+            return () => {
+                map.off('moveend', saveViewportState);
+                map.off('zoomend', saveViewportState);
+            };
+        } else if (!isGuest) {
+             // If user logs in, clear guest state
+             sessionStorage.removeItem(guestViewportKey);
+             sessionStorage.removeItem(guestStyleKey); // Also clear style key
+        }
+        // Dependencies: Run when guest status changes or map instance is ready
+    }, [isGuest, mapRef.current]);
+
+    // Effect to save map STYLE state for guests to sessionStorage
+    useEffect(() => {
+        // Only save if guest and tileLayerInfo.id is valid
+        if (isGuest && tileLayerInfo?.id) {
+            try {
+                sessionStorage.setItem(guestStyleKey, tileLayerInfo.id);
+                logger.debug('Saved guest map style ID to sessionStorage:', tileLayerInfo.id);
+            } catch (e) {
+                logger.error('Failed to save guest map style ID to sessionStorage', e);
+            }
+        }
+        // Dependencies: Run when guest status changes or the tileLayerInfo prop changes
+    }, [isGuest, tileLayerInfo]);
 
     // Data fetching logic (Keep existing useEffect)
     useEffect(() => {

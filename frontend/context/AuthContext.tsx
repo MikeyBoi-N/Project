@@ -16,9 +16,11 @@ interface AuthContextType {
     isAuthenticated: boolean;
     user: User | null;
     loading: boolean;
+    isGuest: boolean; // Added guest state
     login: (email: string, password: string) => Promise<void>;
     register: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
+    continueAsGuest: () => void; // Added guest function
     fetchUser: () => Promise<void>; // Expose fetchUser to refresh state if needed
 }
 
@@ -35,6 +37,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(true); // Start loading initially
+    const [isGuest, setIsGuest] = useState<boolean>(false); // Added guest state
     const router = useRouter();
 
     // Function to fetch user data
@@ -53,15 +56,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 const userData: User = await response.json();
                 setUser(userData);
                 setIsAuthenticated(true);
+                setIsGuest(false); // Ensure guest mode is off if authenticated
             } else {
                 // User not logged in or session expired
                 setUser(null);
                 setIsAuthenticated(false);
+                // Don't reset guest state here, might be intentionally guest
             }
         } catch (error) {
             console.error('Failed to fetch user:', error);
             setUser(null);
             setIsAuthenticated(false);
+            // Don't reset guest state on fetch error
         } finally {
             setLoading(false);
         }
@@ -91,8 +97,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
             if (response.ok) {
                 // Login successful, fetch user data to update context
-                await fetchUser(); // This will set loading to false eventually
-                router.push('/djinn'); // Redirect after successful login and user fetch
+                await fetchUser(); // This will set isAuthenticated, user, and isGuest
+                // Redirect is handled by the component or effect watching isAuthenticated
+                // router.push('/djinn'); // Remove direct redirect from here
             } else {
                 const errorData = await response.json();
                 console.error('Login failed:', errorData);
@@ -103,6 +110,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             console.error('Login error:', error);
             setUser(null);
             setIsAuthenticated(false);
+            setIsGuest(false); // Reset guest state on login error
             setLoading(false);
             throw error; // Re-throw error to be caught in the component
         }
@@ -161,17 +169,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             // Clear state regardless of backend response
             setUser(null);
             setIsAuthenticated(false);
+            setIsGuest(false); // Reset guest state on logout
             setLoading(false);
-            router.push('/login'); // Redirect to login page
+            router.push('/'); // Redirect to home page or a public page after logout
         }
+    };
+ 
+    // Function to continue as guest
+    const continueAsGuest = () => {
+        setUser(null);
+        setIsAuthenticated(false);
+        setIsGuest(true);
+        setLoading(false); // Ensure loading is false
+        router.push('/djinn'); // Navigate to the djinn page for guests
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, user, loading, login, register, logout, fetchUser }}>
+        <AuthContext.Provider value={{ isAuthenticated, user, loading, isGuest, login, register, logout, continueAsGuest, fetchUser }}>
             {children}
         </AuthContext.Provider>
     );
-};
+}; // This now correctly closes the AuthProvider component
 
 // Custom hook to use the AuthContext
 export const useAuth = (): AuthContextType => {

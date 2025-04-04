@@ -16,7 +16,7 @@ const LoadingIndicator: React.FC = () => (
 
 // Component that contains the main app structure and protection logic
 const AppContent: React.FC<{ Component: React.ElementType, pageProps: any }> = ({ Component, pageProps }) => {
-  const { isAuthenticated, user, logout, loading } = useAuth();
+  const { isAuthenticated, isGuest, user, logout, loading } = useAuth(); // Added isGuest
   const router = useRouter();
 
   useEffect(() => {
@@ -24,8 +24,8 @@ const AppContent: React.FC<{ Component: React.ElementType, pageProps: any }> = (
     if (!loading) {
       const pathIsProtected = !publicPaths.includes(router.pathname);
 
-      if (!isAuthenticated && pathIsProtected) {
-        // If user is not logged in and trying to access a protected page, redirect
+      if (!isAuthenticated && !isGuest && pathIsProtected) { // Check for guest status too
+        // If user is not logged in, not a guest, and trying to access a protected page, redirect
         router.push('/login');
       }
       // Optional: Redirect logged-in users away from the login page
@@ -33,16 +33,12 @@ const AppContent: React.FC<{ Component: React.ElementType, pageProps: any }> = (
       //   router.push('/djinn'); // Or default logged-in page
       // }
     }
-  }, [loading, isAuthenticated, router]); // Dependencies ensure effect runs on change
+  }, [loading, isAuthenticated, isGuest, router]); // Added isGuest to dependencies
 
 
   // Basic inline styles for the header
   const headerStyle: React.CSSProperties = {
-    padding: '10px 20px',
-    borderBottom: '1px solid #ccc',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+ 
   };
   const userInfoStyle: React.CSSProperties = { fontSize: '0.9em' };
   const logoutButtonStyle: React.CSSProperties = {
@@ -55,30 +51,14 @@ const AppContent: React.FC<{ Component: React.ElementType, pageProps: any }> = (
 
   // Show loading indicator while auth state is loading OR
   // if user is not authenticated and trying to access a protected page (avoids flash of content)
-  if (loading || (!isAuthenticated && pathIsProtected)) {
+  if (loading || (!isAuthenticated && !isGuest && pathIsProtected)) { // Check for guest status too
     return <LoadingIndicator />;
   }
 
   // Render the actual content (header + page)
   return (
     <>
-      <header style={headerStyle}>
-        <div>Selkie App</div>
-        <div>
-          {isAuthenticated && user ? (
-            <>
-              <span style={userInfoStyle}>Logged in as: {user.email}</span>
-              <button onClick={logout} style={{ ...logoutButtonStyle, marginLeft: '15px' }}>
-                Logout
-              </button>
-            </>
-          ) : (
-             // Optionally show something else, or nothing, if not logged in and not on login page
-             router.pathname !== '/login' && <span></span> // Example: show nothing
-          )}
-        </div>
-      </header>
-      <main style={{ padding: '20px' }}> {/* Add padding for content */}
+      <main> {/* Add padding for content */}
         <Component {...pageProps} />
       </main>
     </>

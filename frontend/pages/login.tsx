@@ -1,14 +1,16 @@
-import React, { useState } from 'react'; // Import useState
+import React, { useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
+import Link from 'next/link'; // Keep Link if needed elsewhere, but not for guest
+import { useAuth } from '../context/AuthContext'; // Import useAuth
 import LoginForm from '../components/auth/LoginForm';
-import RegisterForm from '../components/auth/RegisterForm'; // Import RegisterForm
+import RegisterForm from '../components/auth/RegisterForm';
 import styles from '../styles/Login.module.css';
 
 const LoginPage: React.FC = () => {
   const router = useRouter();
-  const [isRegistering, setIsRegistering] = useState(false); // State to track view
+  const [isRegistering, setIsRegistering] = useState(false);
+  const { continueAsGuest } = useAuth(); // Get continueAsGuest function
 
   const switchToRegister = () => setIsRegistering(true);
   const switchToLogin = () => setIsRegistering(false);
@@ -24,7 +26,8 @@ const LoginPage: React.FC = () => {
       </Head>
 
       {/* Close Button */}
-      <button onClick={() => router.back()} className={styles.closeButton} title="Close">
+      {/* Close Button - Navigate home instead of back */}
+      <button onClick={() => router.push('/')} className={styles.closeButton} title="Close">
         &times;
       </button>
 
@@ -56,9 +59,10 @@ const LoginPage: React.FC = () => {
         )}
       </p>
 
-      <Link href="/djinn" className={styles.guestLink}>
+      {/* Use button to call context function */}
+      <button onClick={continueAsGuest} className={styles.guestLink}>
         continue as guest
-      </Link>
+      </button>
 
       {/* Optional: Add a footer or other elements outside the login box if needed */}
     </div>

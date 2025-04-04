@@ -27,6 +27,16 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
+    "/about/djinn": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/about/djinn.js"
+    ],
+    "/about/ghost": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/about/ghost.js"
+    ],
     "/djinn": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",

@@ -5,6 +5,7 @@ import { FaLayerGroup } from 'react-icons/fa'; // Layers icon
 
 // Define the structure for a style option
 export interface StyleOption {
+    id: string; // Added ID for storage/key purposes
     name: string;
     imageSrc: string; // Changed from color to imageSrc
     url: string; // TileLayer URL
@@ -12,13 +13,13 @@ export interface StyleOption {
 }
 
 // Define the available style options based on Figma colors and placeholders
-const styleOptions: StyleOption[] = [
-    { name: 'Dark', imageSrc: '/images/map/style_preview_1.png', url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>' },
-    { name: 'Ocean', imageSrc: '/images/map/style_preview_2.png', url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }, // Placeholder: OSM
-    { name: 'Satellite', imageSrc: '/images/map/style_preview_3.png', url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', attribution: 'Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community' },
-    { name: 'Infrared', imageSrc: '/images/map/style_preview_4.png', url: 'https://{s}.basemaps.cartocdn.com/rastertiles/positron/{z}/{x}/{y}{r}.png', attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>' }, // Placeholder: Carto Positron
-    { name: 'Night', imageSrc: '/images/map/style_preview_5.png', url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>' }, // Placeholder: Carto Dark
-    { name: 'Terrain', imageSrc: '/images/map/style_preview_6.png', url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }, // Placeholder: OSM
+export const styleOptions: StyleOption[] = [ // Add export keyword
+    { id: 'dark', name: 'Dark', imageSrc: '/images/map/style_preview_1.png', url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>' },
+    { id: 'ocean', name: 'Ocean', imageSrc: '/images/map/style_preview_2.png', url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }, // Placeholder: OSM
+    { id: 'satellite', name: 'Satellite', imageSrc: '/images/map/style_preview_3.png', url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', attribution: 'Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community' },
+    { id: 'infrared', name: 'Infrared', imageSrc: '/images/map/style_preview_4.png', url: 'https://{s}.basemaps.cartocdn.com/rastertiles/positron/{z}/{x}/{y}{r}.png', attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>' }, // Placeholder: Carto Positron
+    { id: 'night', name: 'Night', imageSrc: '/images/map/style_preview_5.png', url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>' }, // Placeholder: Carto Dark
+    { id: 'terrain', name: 'Terrain', imageSrc: '/images/map/style_preview_6.png', url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }, // Placeholder: OSM
 ];
 
 interface LayersMenuProps {
@@ -96,8 +97,8 @@ const LayersMenu: React.FC<LayersMenuProps> = ({ selectedStyle, onStyleChange })
                 <div className={styles.styleOptions}>
                     {styleOptions.map((style) => (
                         <div
-                            key={style.name}
-                            className={`${styles.stylePreview} ${selectedStyle.name === style.name ? styles.selected : ''}`}
+                            key={style.id} // Use id as key
+                            className={`${styles.stylePreview} ${selectedStyle.id === style.id ? styles.selected : ''}`} // Compare by id
                             // style removed, background handled by image
                             onClick={() => handleStyleSelect(style)}
                             title={style.name}
