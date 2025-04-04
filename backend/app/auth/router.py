@@ -1,10 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import Request, Response # Add Request and Response
+from fastapi.responses import RedirectResponse # Add RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import Annotated # Use Annotated for Depends syntax in newer FastAPI/Python
+from authlib.integrations.starlette_client import OAuth # Add OAuth
+import uuid # For potential state generation if needed, though Authlib handles it
 from neo4j import AsyncManagedTransaction # Import the correct type hint
 
 from . import schemas, crud, security
 from app.db.session import get_db_transaction # Import the actual dependency
+from app.core.config import settings # Import settings
 
 # Placeholder for database session dependency - Replace with actual implementation later
 # This function would typically get a Neo4j driver instance and manage a session/transaction
@@ -82,4 +87,124 @@ async def login_for_access_token(
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
+
+# Initialize OAuth client (outside routes)
+oauth = OAuth()
+oauth.register(
+    name='google',
+    client_id=settings.GOOGLE_CLIENT_ID,
+    client_secret=settings.GOOGLE_CLIENT_SECRET,
+    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+    client_kwargs={
+        'scope': 'openid email profile' # Request necessary scopes
+    }
+)
+
+# New Routes
+@router.get("/google/login")
+async def login_via_google(request: Request):
+    """
+    Redirects the user to Google's OAuth 2.0 server for authentication.
+    """
+    # The redirect URI must match *exactly* one of the authorized redirect URIs
+    # configured in the Google Cloud Console for your OAuth client ID.
+    redirect_uri = settings.GOOGLE_REDIRECT_URI # Use configured redirect URI
+    # Authlib handles state generation and verification automatically
+    return await oauth.google.authorize_redirect(request, redirect_uri)
+
+@router.get("/google/callback", response_class=RedirectResponse)
+async def google_auth_callback(request: Request, tx: DbTxn):
+    """
+    Handles the callback from Google after user authentication.
+    Finds or creates the user, generates a JWT, sets it in a cookie,
+    and redirects back to the frontend.
+    """
+    try:
+        # Exchange authorization code for access token and user info
+        token = await oauth.google.authorize_access_token(request)
+        user_info = await oauth.google.parse_id_token(request, token)
+        # Or use: user_info = await oauth.google.userinfo(token=token)
+
+        google_id = user_info.get('sub')
+        email = user_info.get('email')
+
+        if not google_id or not email:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Could not retrieve Google ID or email from Google.",
+            )
+
+        # --- Find or Create User ---
+        # 1. Try finding user by Google ID
+        user = await crud.get_user_by_google_id(tx, google_id=google_id) # Needs implementation in crud.py
+
+        if not user:
+            # 2. Try finding user by email (if not found by google_id)
+            user = await crud.get_user_by_email(tx, email=email)
+            if user:
+                # 2a. User exists by email, link Google ID
+                # Ensure user object has an 'id' attribute accessible here
+                await crud.link_google_id_to_user(tx, user_id=user.id, google_id=google_id) # Needs implementation in crud.py
+            else:
+                # 3. User not found, create new user from Google info
+                # Ensure schemas.UserCreateGoogle exists or adapt
+                user_create_google = schemas.UserCreateGoogle(
+                    email=email,
+                    google_id=google_id,
+                    # Potentially add other fields like first_name, last_name if available and needed
+                    # name=user_info.get('name')
+                )
+                user = await crud.create_user_from_google(tx, user_in=user_create_google) # Needs implementation in crud.py
+
+        if not user: # Should not happen if create_user worked, but safety check
+             raise HTTPException(status_code=500, detail="Could not retrieve or create user.")
+
+        # --- Generate JWT and Set Cookie ---
+        # Ensure user object has 'email' and 'id' attributes accessible here
+        access_token = security.create_access_token(
+            data={"sub": user.email, "user_id": str(user.id)} # Include user ID if available and useful
+        )
+
+        # Redirect to frontend, setting the token in an HTTP-only cookie
+        # TODO: Define frontend URL in settings?
+        frontend_url = "/" # Example: Redirect to homepage
+        response = RedirectResponse(url=frontend_url)
+        response.set_cookie(
+            key="access_token",
+            value=f"Bearer {access_token}",
+            httponly=True,
+            secure=True, # Set secure=True for HTTPS only
+            samesite="lax", # Or 'strict' depending on needs
+            path="/", # Cookie available for all paths
+            # max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60 # Optional: set cookie expiry
+        )
+        return response
+
+    except Exception as e:
+        # Log the error for debugging
+        print(f"Error during Google OAuth callback: {e}") # Replace with proper logging
+        # Redirect to a frontend error page or login page with an error message
+        # TODO: Define frontend error URL?
+        error_url = "/login?error=oauth_failed"
+        return RedirectResponse(url=error_url)
+
+
+@router.post("/logout")
+async def logout(response: Response):
+    """
+    Clears the access_token cookie to log the user out.
+    """
+    response.delete_cookie(
+        key="access_token",
+        path="/", # Ensure path matches the one used for setting the cookie
+        httponly=True,
+        secure=True, # Match secure flag used when setting
+        samesite="lax" # Match samesite flag used when setting
+    )
+    # Optionally return a confirmation message
+    return {"message": "Successfully logged out"}
+
+# TODO: Implement /users/me and JWT cookie dependency (Partially done via /users/me router)
+# TODO: Add protected endpoint example
+# TODO: Implement /users/me, /auth/logout, and JWT cookie dependency
 # TODO: Add endpoints for Google OAuth flow (/auth/google/login, /auth/google/callback)

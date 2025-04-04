@@ -1,41 +1,49 @@
-# Base stage: Set up the base image
-FROM node:20-slim AS base
+# Stage 1: Builder
+FROM node:20-slim AS builder
 WORKDIR /app
 
-# Dependencies stage: Install project dependencies
-FROM base AS deps
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+# Copy package manager files
+# Use COPY --link for better layer caching if available, otherwise standard COPY
+# Assuming npm, adjust if using yarn or pnpm
+COPY package.json package-lock.json* ./
+
+# Install dependencies using npm ci for reproducibility
 RUN npm ci
 
-# Builder stage: Build the Next.js application
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+# Copy the rest of the application source code
 COPY . .
+
+# Build the Next.js application
+# Ensure your build script is correctly defined in package.json
 RUN npm run build
 
-# Runner stage: Set up the production environment
-FROM base AS runner
+# Stage 2: Runner - Minimal image with only necessary artifacts
+FROM node:20-slim AS runner
 WORKDIR /app
 
+# Set environment to production
 ENV NODE_ENV=production
-# Uncomment the following line to disable telemetry during runtime
+# Optionally, disable telemetry
 # ENV NEXT_TELEMETRY_DISABLED 1
 
-# Set up a non-root user for security
+# Create a non-root user and group for security
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy necessary files from the builder stage
-COPY --from=builder /app/public ./public
-# Leverage output file tracing to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
+# Copy necessary artifacts from the builder stage
+# Ensure these paths match the output structure of your Next.js build (standalone output)
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Switch to the non-root user
 USER nextjs
 
+# Expose the port the app runs on
 EXPOSE 3000
+
+# Set the default port environment variable (Next.js uses this)
 ENV PORT 3000
 
+# Command to run the application (using the standalone server)
 CMD ["node", "server.js"]
