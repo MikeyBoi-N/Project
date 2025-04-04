@@ -22,7 +22,7 @@ const AppContent: React.FC<{ Component: React.ElementType, pageProps: any }> = (
   useEffect(() => {
     // Only run redirect logic once loading is complete
     if (!loading) {
-      const pathIsProtected = !publicPaths.includes(router.pathname);
+      const pathIsProtected = !publicPaths.includes(router.pathname) && !router.pathname.startsWith('/about/');
 
       if (!isAuthenticated && !isGuest && pathIsProtected) { // Check for guest status too
         // If user is not logged in, not a guest, and trying to access a protected page, redirect
@@ -47,7 +47,7 @@ const AppContent: React.FC<{ Component: React.ElementType, pageProps: any }> = (
   };
 
   // Determine if the page requires authentication
-  const pathIsProtected = !publicPaths.includes(router.pathname);
+  const pathIsProtected = !publicPaths.includes(router.pathname) && !router.pathname.startsWith('/about/');
 
   // Show loading indicator while auth state is loading OR
   // if user is not authenticated and trying to access a protected page (avoids flash of content)

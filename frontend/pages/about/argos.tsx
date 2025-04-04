@@ -21,7 +21,7 @@ const ArgosPage: React.FC = () => {
           </div>
           <div className={styles.imageContainer}>
             <Image
-              src="/images/promo/argos_promo_main.png"
+              src="/images/promo/argos/argos_promo_main.png"
               alt="Argos Promotional Image"
               layout="responsive" // Use layout="responsive" or "fill" and control size with CSS
               width={700} // Provide aspect ratio hint, actual size controlled by CSS
