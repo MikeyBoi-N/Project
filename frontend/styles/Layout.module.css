@@ -100,3 +100,48 @@
   display: flex; /* Align icon correctly within link */
   align-items: center;
 }
+
+/* Styles for Header Dropdown */
+.headerTitleContainer {
+  position: relative; /* Needed for absolute positioning of the dropdown */
+  display: inline-block; /* Keep it inline but allow relative positioning */
+}
+
+.clickableHeader {
+  cursor: pointer;
+  /* Optional: Add a subtle hover effect */
+  transition: color 0.2s ease;
+}
+
+.clickableHeader:hover {
+  color: #cccccc; /* Slightly lighter on hover */
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%; /* Position below the header title */
+  left: 0;
+  background-color: #333; /* Slightly different dark background */
+  border: 1px solid #555;
+  border-radius: 4px;
+  padding: 8px 0; /* Padding top/bottom */
+  min-width: 150px; /* Ensure minimum width */
+  z-index: 1000; /* Ensure it's above other content */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dropdownItem {
+  font-family: 'Inter', sans-serif; /* Use a standard font */
+  font-size: 14px;
+  color: #FFFFFF;
+  padding: 10px 15px;
+  display: block; /* Make the whole area clickable */
+  text-decoration: none;
+  white-space: nowrap; /* Prevent wrapping */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.dropdownItem:hover {
+  background-color: #555; /* Hover effect */
+}

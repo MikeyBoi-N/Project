@@ -36,8 +36,8 @@ const LoginPage: React.FC = () => {
 
       <LoginForm onEmailSubmit={handleLoginSubmit} />
 
-      <Link href="/map" legacyBehavior>
-        <a className={styles.guestLink}>continue as guest</a>
+      <Link href="/djinn" className={styles.guestLink}> {/* Updated link, removed legacyBehavior and <a> */}
+        continue as guest
       </Link>
 
 
