@@ -1,1 +1,0 @@
-self.__REACT_LOADABLE_MANIFEST="{\"pages\\\\djinn.tsx -> ../components/map/SharedMapComponent\":{\"id\":\"pages\\\\djinn.tsx -> ../components/map/SharedMapComponent\",\"files\":[\"static/chunks/components_map_SharedMapComponent_tsx.js\"]}}"
