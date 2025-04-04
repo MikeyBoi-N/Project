@@ -4,7 +4,10 @@ import L, { Map } from 'leaflet'; // Added Map type
 import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
 import { StyleOption } from './LayersMenu'; // Import StyleOption type
-
+import FilterButtons from './FilterButtons'; // Import the new filter buttons
+import SearchBar from './SearchBar'; // Import the search bar
+import ContextWindowPlaceholder from './ContextWindowPlaceholder'; // Import the placeholder
+import styles from '../../styles/MapPage.module.css'; // Import CSS module for styling
 // Fix for default marker icon issue
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
@@ -177,7 +180,12 @@ const SharedMapComponent: React.FC<SharedMapComponentProps> = ({ tileLayerInfo, 
                     })}
                 </MapContainer>
             )}
-            {/* REMOVED: Theme Toggle Button */}
+            {/* New Overlay Container for Controls */}
+            <div className={styles.mapControlsOverlay}>
+                <FilterButtons />
+                <SearchBar /> {/* Assuming SearchBar takes no props for now */}
+                <ContextWindowPlaceholder />
+            </div>
         </div>
     );
 };

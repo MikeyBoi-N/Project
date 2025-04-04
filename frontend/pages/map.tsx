@@ -5,8 +5,9 @@ import styles from '../styles/MapPage.module.css'; // Import map page styles
 import LayersMenu, { defaultStyleOption, StyleOption } from '../components/map/LayersMenu'; // Import LayersMenu and types
 import { FaPlus, FaMinus, FaCompass, FaClock } from 'react-icons/fa'; // Import icons
 import type { Map } from 'leaflet'; // Import Leaflet Map type for ref
-import FilterTabs from '../components/map/FilterTabs'; // Import FilterTabs
-
+import FilterButtons from '../components/map/FilterButtons'; // Import FilterButtons
+import SearchBar from '../components/map/SearchBar'; // Import SearchBar
+import ContextWindowPlaceholder from '../components/map/ContextWindowPlaceholder'; // Import Placeholder
 // Dynamically import the map component to avoid SSR issues with Leaflet
 const SharedMapComponent = dynamic(
   () => import('../components/map/SharedMapComponent'),
@@ -42,7 +43,6 @@ const MapPage: React.FC = () => {
   return (
     <Layout title="Map Suite - Selkie">
       {/* Pass selected style and mapRef to the map component */}
-      <FilterTabs />
       {/* Ensure SharedMapComponent is updated to accept these props */}
       <SharedMapComponent
         tileLayerInfo={selectedStyle}
@@ -50,41 +50,17 @@ const MapPage: React.FC = () => {
       />
 
       {/* --- Overlays --- */}
-
-      {/* Placeholder for Search Bar (Keep existing) */}
-      <div style={{
-        position: 'absolute',
-        top: '20px',
-        left: '20px',
-        zIndex: 1000, // Ensure above map but potentially below cluster
-        backgroundColor: 'rgba(217, 217, 217, 0.8)',
-        padding: '10px 15px',
-        borderRadius: '16.5px',
-        color: '#333',
-        fontFamily: 'Anonymous Pro, monospace',
-        fontSize: '16px',
-      }}>
-        Search Placeholder
+      {/* Individual Overlay Components */}
+      <div className={styles.filterButtonsOverlay}>
+        <FilterButtons />
+      </div>
+      <div className={styles.searchBarOverlay}>
+        <SearchBar />
+      </div>
+      <div className={styles.contextWindowOverlay}>
+        <ContextWindowPlaceholder />
       </div>
 
-      {/* Placeholder for Map Context Window (Keep existing) */}
-      <div style={{
-        position: 'absolute',
-        top: '70px',
-        left: '20px',
-        zIndex: 1000,
-        width: '250px',
-        backgroundColor: 'rgba(217, 217, 217, 0.8)',
-        padding: '15px',
-        borderRadius: '16.5px',
-        color: '#333',
-        fontFamily: 'Inter, sans-serif',
-      }}>
-        <h3 style={{ marginTop: 0, fontFamily: 'Inter', fontWeight: 600, fontSize: '16px', color: 'rgba(0, 0, 0, 0.72)' }}>
-          This area
-        </h3>
-        <p>Context Window Placeholder</p>
-      </div>
 
       {/* --- Bottom Right UI Cluster --- */}
       <div className={styles.bottomRightCluster}>
