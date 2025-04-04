@@ -13,14 +13,11 @@ const SharedMapComponent = dynamic(
 const MapPage: React.FC = () => {
   return (
     <Layout title="Map Suite - Selkie">
-      {/* Main map container - using the dynamically imported component */}
-      <div style={{
-        position: 'absolute', // Take up full space within parent
-        top: 0, left: 0, right: 0, bottom: 0,
-        zIndex: 1, // Base layer
-      }}>
-        <SharedMapComponent />
-      </div>
+      {/* Main container for the map page content. It will grow due to Layout.module.css changes */}
+      {/* The SharedMapComponent itself will be styled to fill this container */}
+      <SharedMapComponent />
+
+      {/* Overlay elements remain absolutely positioned relative to the parent (.pageContent) */}
 
       {/* Placeholder for Search Bar */}
       <div style={{

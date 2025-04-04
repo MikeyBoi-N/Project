@@ -132,15 +132,35 @@ const SharedMapComponent: React.FC = () => {
     // Ensure the parent container or a CSS rule provides this.
     // Example: style={{ height: '500px', width: '100%' }}
 
+    // State for theme
+    const [isDarkMode, setIsDarkMode] = useState(true); // Default to dark mode
+
     return (
-        <div style={{ height: '600px', width: '100%', border: '1px solid #ccc' }}>
+        // This component now expects its parent (.pageContent) to manage layout.
+        // We use a React Fragment <> or a div that grows to fill the space.
+        // Let's use a div that grows to ensure it fills the flex container.
+        <div style={{ flexGrow: 1, position: 'relative', width: '100%', height: '100%' }}>
              {/* Check if window is defined for SSR safety, although MapContainer handles much of this */}
             {typeof window !== 'undefined' && (
-                <MapContainer center={defaultCenter} zoom={defaultZoom} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
-                    <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
+                <MapContainer
+                    center={defaultCenter}
+                    zoom={defaultZoom}
+                    scrollWheelZoom={true}
+                    zoomControl={false} // Disable default Leaflet zoom controls
+                    style={{ height: '100%', width: '100%' }} // Map fills the container div
+                >
+                    {/* Conditionally render TileLayer based on theme */}
+                    {isDarkMode ? (
+                        <TileLayer
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                        />
+                    ) : (
+                        <TileLayer
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+                    )}
 
                     {isLoading && <p>Loading map data...</p>}
                     {error && <p style={{ color: 'red' }}>Error: {error}</p>}
@@ -177,6 +197,25 @@ const SharedMapComponent: React.FC = () => {
                     })}
                 </MapContainer>
             )}
+            {/* Theme Toggle Button - Positioned absolutely */}
+            <button
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                style={{
+                    position: 'absolute',
+                    bottom: '80px', // Position above default zoom placeholders for now
+                    right: '10px',
+                    zIndex: 1000, // Ensure it's above map layers
+                    padding: '8px 12px',
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    color: 'white',
+                    border: '1px solid #555',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                }}
+            >
+                {isDarkMode ? 'Light' : 'Dark'} Mode
+            </button>
         </div>
     );
 };
