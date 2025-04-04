@@ -1,0 +1,7 @@
+.scrollableContainer {
+  overflow-y: auto; /* Enable vertical scrolling */
+  height: 100%; /* Attempt to fill parent height */
+  box-sizing: border-box; /* Include padding in height calculation */
+  padding-right: 12px; /* Add space between content and scrollbar */
+
+}

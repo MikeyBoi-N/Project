@@ -39,14 +39,56 @@
   overflow: hidden; /* Prevent main area from causing scroll */
 }
 
+/* Styles for the ResizableBox container */
+.sidebarResizableContainer {
+  position: relative; /* Needed for absolute positioning of the handle */
+  flex-shrink: 0; /* Prevent shrinking */
+  display: flex; /* Use flex to manage inner content */
+  background-color: #212121; /* Match main background */
+  border-right: 1px solid #444; /* Separator */
+}
+
+/* Styles for the actual sidebar nav element inside the resizable container */
 .sidebar {
-  width: 200px; /* Adjust width as needed */
+  /* width: 100%; Let ResizableBox control width */
+  height: 100%; /* Fill the height of the resizable container */
   background-color: #212121; /* Match main background */
   padding: 20px;
   display: flex;
   flex-direction: column;
-  flex-shrink: 0; /* Prevent sidebar from shrinking */
-  border-right: 1px solid #444; /* Separator */
+  overflow: hidden; /* Hide overflow on the nav itself, inner div will scroll */
+  box-sizing: border-box; /* Include padding in width/height calculation */
+}
+
+
+/* Style for the container that needs to scroll within the sidebar */
+.sidebarScrollableArea {
+  flex-grow: 1; /* Allow this area to take up available vertical space */
+  min-height: 0; /* Important for allowing shrinking within flex container */
+  /* position: relative; Optional: Add if ScrollableContent needs a positioning context */
+}
+
+/* Styles for the inner div that handles scrolling */
+.sidebarContent {
+  flex-grow: 1; /* Allow this div to take up available space */
+  overflow-y: auto; /* Enable vertical scrolling */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  /* Add some padding if needed, separate from the main sidebar padding */
+  padding-right: 5px; /* Space for scrollbar */
+}
+
+/* Custom styling for the resize handle */
+.customResizeHandle {
+  position: absolute;
+  right: -5px; /* Position slightly outside the box */
+  top: 0;
+  height: 100%;
+  width: 10px; /* Width of the draggable area */
+  cursor: col-resize; /* Standard resize cursor */
+  z-index: 10; /* Ensure it's clickable */
+  /* Optional: Add a visual indicator */
+  /* background: rgba(255, 255, 255, 0.1); */
+  /* border-left: 1px solid #666; */
 }
 
 .sidebarLink {
@@ -74,8 +116,8 @@
 .pageContent {
   flex-grow: 1; /* Takes remaining horizontal space */
   position: relative; /* Needed for absolutely positioned children like overlays */
-  /* overflow: auto; Removed to allow map to fully control its view */
-  /* padding: 20px; Removed to allow content like maps to fill the space */
+  /* overflow: auto; */ /* Let inner components manage their own scroll if needed */
+  /* padding: 20px; */ /* Let inner components manage their own padding */
   display: flex; /* Use flexbox to allow child to grow */
   flex-direction: column; /* Stack children vertically */
 }
