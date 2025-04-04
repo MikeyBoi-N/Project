@@ -146,3 +146,19 @@
   text-align: center;
   max-width: 80%; /* Prevent text from being too wide */
 }
+
+
+.guestLink {
+  font-family: 'Anonymous Pro', monospace;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8); /* Slightly brighter than terms */
+  text-decoration: none;
+  margin-top: 15px; /* Space above the link */
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.guestLink:hover {
+  color: #FFFFFF; /* White on hover */
+  text-decoration: underline;
+}
