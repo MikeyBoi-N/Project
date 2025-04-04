@@ -1,0 +1,45 @@
+.bottomRightCluster {
+    position: absolute; /* Position relative to the parent (.pageContent in Layout) */
+    bottom: 20px;
+    right: 20px;
+    z-index: 1001; /* Ensure it's above map tiles (usually z-index 1-400) and potentially other overlays */
+    display: flex; /* Keep flex */
+    /* flex-direction: row; /* Default, so can be omitted */
+    align-items: flex-end; /* Align items vertically to the bottom */
+    gap: 10px; /* Space between Layers menu and Tool Nav */
+}
+
+.toolNavContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 5px; /* Space between tool buttons */
+    background-color: rgba(0, 0, 0, 0.7); /* Dark background like Figma */
+    padding: 8px;
+    border-radius: 8px; /* Match Figma */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.toolButton {
+    background-color: transparent; /* Button itself is transparent */
+    color: rgba(255, 255, 255, 0.9); /* Light text/icon */
+    border: none;
+    padding: 6px;
+    border-radius: 4px; /* Rounded corners for the button */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem; /* Adjust icon/text size */
+    width: 36px; /* Fixed width */
+    height: 36px; /* Fixed height */
+    transition: background-color 0.2s ease;
+}
+
+.toolButton:hover {
+    background-color: rgba(255, 255, 255, 0.2); /* Subtle hover effect */
+}
+
+.toolButton span { /* For text like '3D' */
+    font-weight: bold;
+    font-size: 0.9rem;
+}

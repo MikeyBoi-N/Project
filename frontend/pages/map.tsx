@@ -1,8 +1,11 @@
-import React from 'react';
-import Layout from '../components/layout/Layout'; // Adjust path if needed
+import React, { useState, useRef, useCallback } from 'react'; // Added useState, useRef, useCallback
+import Layout from '../components/layout/Layout';
 import dynamic from 'next/dynamic';
-// Import map-specific styles if needed later
-// import styles from '../styles/Map.module.css';
+import styles from '../styles/MapPage.module.css'; // Import map page styles
+import LayersMenu, { defaultStyleOption, StyleOption } from '../components/map/LayersMenu'; // Import LayersMenu and types
+import { FaPlus, FaMinus, FaCompass, FaClock } from 'react-icons/fa'; // Import icons
+import type { Map } from 'leaflet'; // Import Leaflet Map type for ref
+import FilterTabs from '../components/map/FilterTabs'; // Import FilterTabs
 
 // Dynamically import the map component to avoid SSR issues with Leaflet
 const SharedMapComponent = dynamic(
@@ -11,23 +14,52 @@ const SharedMapComponent = dynamic(
 );
 
 const MapPage: React.FC = () => {
+  // State for the currently selected map style
+  const [selectedStyle, setSelectedStyle] = useState<StyleOption>(defaultStyleOption);
+  // Ref to hold the Leaflet map instance
+  const mapRef = useRef<Map | null>(null);
+
+  // Callback to update the selected style
+  const handleStyleChange = useCallback((style: StyleOption) => {
+    setSelectedStyle(style);
+  }, []);
+
+  // Zoom handlers using the mapRef
+  const handleZoomIn = () => {
+    mapRef.current?.zoomIn();
+  };
+
+  const handleZoomOut = () => {
+    mapRef.current?.zoomOut();
+  };
+
+  // Placeholder handlers for deferred functionality
+  const handle3DClick = () => console.log("3D View Clicked (Deferred)");
+  const handleRotateClick = () => console.log("Rotate Clicked (Deferred)");
+  const handleTimelineClick = () => console.log("Timeline Clicked (Deferred)");
+
+
   return (
     <Layout title="Map Suite - Selkie">
-      {/* Main container for the map page content. It will grow due to Layout.module.css changes */}
-      {/* The SharedMapComponent itself will be styled to fill this container */}
-      <SharedMapComponent />
+      {/* Pass selected style and mapRef to the map component */}
+      <FilterTabs />
+      {/* Ensure SharedMapComponent is updated to accept these props */}
+      <SharedMapComponent
+        tileLayerInfo={selectedStyle}
+        mapRef={mapRef}
+      />
 
-      {/* Overlay elements remain absolutely positioned relative to the parent (.pageContent) */}
+      {/* --- Overlays --- */}
 
-      {/* Placeholder for Search Bar */}
+      {/* Placeholder for Search Bar (Keep existing) */}
       <div style={{
         position: 'absolute',
         top: '20px',
-        left: '20px', // Position relative to the pageContent area
-        zIndex: 2, // Above map
-        backgroundColor: 'rgba(217, 217, 217, 0.8)', // Match Figma Rectangle 7
+        left: '20px',
+        zIndex: 1000, // Ensure above map but potentially below cluster
+        backgroundColor: 'rgba(217, 217, 217, 0.8)',
         padding: '10px 15px',
-        borderRadius: '16.5px', // Match Figma Rectangle 7
+        borderRadius: '16.5px',
         color: '#333',
         fontFamily: 'Anonymous Pro, monospace',
         fontSize: '16px',
@@ -35,16 +67,16 @@ const MapPage: React.FC = () => {
         Search Placeholder
       </div>
 
-      {/* Placeholder for Map Context Window */}
+      {/* Placeholder for Map Context Window (Keep existing) */}
       <div style={{
         position: 'absolute',
-        top: '70px', // Below search bar
+        top: '70px',
         left: '20px',
-        zIndex: 2, // Above map
-        width: '250px', // Approximate width
-        backgroundColor: 'rgba(217, 217, 217, 0.8)', // Match Figma Rectangle 7
+        zIndex: 1000,
+        width: '250px',
+        backgroundColor: 'rgba(217, 217, 217, 0.8)',
         padding: '15px',
-        borderRadius: '16.5px', // Match Figma Rectangle 7
+        borderRadius: '16.5px',
         color: '#333',
         fontFamily: 'Inter, sans-serif',
       }}>
@@ -52,21 +84,34 @@ const MapPage: React.FC = () => {
           This area
         </h3>
         <p>Context Window Placeholder</p>
-        {/* Add placeholder list items later */}
       </div>
 
-      {/* Placeholder for Map Controls (Zoom, etc.) */}
-      <div style={{
-        position: 'absolute',
-        bottom: '20px',
-        right: '20px',
-        zIndex: 2, // Above map
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '5px',
-      }}>
-        <div style={{ padding: '5px', backgroundColor: '#000', borderRadius: '8px', color: 'rgba(255, 255, 255, 0.8)', textAlign: 'center' }}>+</div>
-        <div style={{ padding: '5px', backgroundColor: '#000', borderRadius: '8px', color: 'rgba(255, 255, 255, 0.8)', textAlign: 'center' }}>-</div>
+      {/* --- Bottom Right UI Cluster --- */}
+      <div className={styles.bottomRightCluster}>
+        {/* Layers Menu Component */}
+        <LayersMenu
+          selectedStyle={selectedStyle}
+          onStyleChange={handleStyleChange}
+        />
+
+        {/* Tool Navigation Section */}
+        <div className={styles.toolNavContainer}>
+          <button className={styles.toolButton} onClick={handleZoomIn} aria-label="Zoom In">
+            <FaPlus />
+          </button>
+          <button className={styles.toolButton} onClick={handleZoomOut} aria-label="Zoom Out">
+            <FaMinus />
+          </button>
+          <button className={styles.toolButton} onClick={handle3DClick} aria-label="3D View">
+            <span>3D</span>
+          </button>
+          <button className={styles.toolButton} onClick={handleRotateClick} aria-label="Rotate View">
+            <FaCompass />
+          </button>
+          <button className={styles.toolButton} onClick={handleTimelineClick} aria-label="Timeline">
+            <FaClock /> {/* Using FaClock as a substitute for 🕙 */}
+          </button>
+        </div>
       </div>
 
     </Layout>
