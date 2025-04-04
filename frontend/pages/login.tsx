@@ -26,9 +26,9 @@ const LoginPage: React.FC = () => {
         <link href="https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Inter:wght@300&display=swap" rel="stylesheet" />
       </Head>
 
-      {/* Back Button */}
-      <button onClick={() => router.back()} className={styles.backButton}>
-        &larr; Back
+      {/* Close Button */}
+      <button onClick={() => router.back()} className={styles.closeButton} title="Close"> {/* Changed class name and text */}
+        &times; {/* Multiplication sign for 'X' */}
       </button>
 
       <h1 className={styles.title}>Selkie</h1>
