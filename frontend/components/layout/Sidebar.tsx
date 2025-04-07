@@ -7,7 +7,7 @@ import styles from './Sidebar.module.css'; // Import CSS module for layout sideb
 export interface SidebarItemData {
   id: string;
   title: string;
-  isChecked: boolean;
+  checkState: 'checked' | 'indeterminate' | 'unchecked'; // Replaces isChecked
   isOpen?: boolean; // Top-level items might use this
   isSubOpen?: boolean; // Nested items might use this
   items?: SidebarItemData[]; // For top-level children
@@ -109,10 +109,10 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
       <div className={styles.sidebarItemHeader} onClick={handleToggleOpen}>
         {/* Custom Checkbox */}
         <span
-          className={`${styles.customCheckbox} ${item.isChecked ? styles.checked : ''}`}
+          className={`${styles.customCheckbox} ${item.checkState === 'checked' ? styles.checked : ''} ${item.checkState === 'indeterminate' ? styles.indeterminate : ''}`}
           onClick={handleToggleCheck}
           role="checkbox"
-          aria-checked={item.isChecked}
+          aria-checked={item.checkState === 'indeterminate' ? 'mixed' : item.checkState === 'checked'}
           aria-labelledby={`title-${item.id}`} // Accessibility
         ></span>
 

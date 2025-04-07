@@ -40,140 +40,140 @@ type Detection = {
 const sampleSidebarStructure: SidebarItemData[] = [
   // Computer Vision Section
   {
-    id: 'cv', title: 'Computer Vision', isChecked: false, isOpen: false, items: [
-      { id: 'cv-detection', title: 'Detection Threshold', isChecked: false, isSubOpen: false, subItems: [
-          { id: 'cv-detection-confidence', title: 'Confidence Score', isChecked: false, hasSlider: true /* 0.1-0.9 */ },
-          { id: 'cv-detection-size', title: 'Object Size Range', isChecked: false, hasInput: true /* pixels/meters/feet */ },
-          { id: 'cv-detection-sensitivity', title: 'Class Sensitivity', isChecked: false, hasPicker: true /* Aircraft, vessels, etc. */, subSubItems: [
-              { id: 'cv-sensitivity-aircraft', title: 'Aircraft', isChecked: false },
-              { id: 'cv-sensitivity-vessels', title: 'Vessels', isChecked: false },
-              { id: 'cv-sensitivity-vehicles', title: 'Land Vehicles', isChecked: false },
+    id: 'cv', title: 'Computer Vision', checkState: 'unchecked', isOpen: false, items: [
+      { id: 'cv-detection', title: 'Detection Threshold', checkState: 'unchecked', isSubOpen: false, subItems: [
+          { id: 'cv-detection-confidence', title: 'Confidence Score', checkState: 'unchecked', hasSlider: true /* 0.1-0.9 */ },
+          { id: 'cv-detection-size', title: 'Object Size Range', checkState: 'unchecked', hasInput: true /* pixels/meters/feet */ },
+          { id: 'cv-detection-sensitivity', title: 'Class Sensitivity', checkState: 'unchecked', hasPicker: true /* Aircraft, vessels, etc. */, subSubItems: [
+              { id: 'cv-sensitivity-aircraft', title: 'Aircraft', checkState: 'unchecked' },
+              { id: 'cv-sensitivity-vessels', title: 'Vessels', checkState: 'unchecked' },
+              { id: 'cv-sensitivity-vehicles', title: 'Land Vehicles', checkState: 'unchecked' },
               // Potentially more nested classes here
           ]},
       ]},
-      { id: 'cv-temporal', title: 'Temporal Filters', isChecked: false, isSubOpen: false, subItems: [
-          { id: 'cv-temporal-hours', title: 'Detections within X hours', isChecked: false, hasSlider: true /* 1-72 */ },
-          { id: 'cv-temporal-timelapse', title: 'Time-lapse Speed', isChecked: false, hasSlider: true /* 1x-10x */ },
-          { id: 'cv-temporal-history', title: 'Historical Comparison', isChecked: false, hasPicker: true /* Side-by-side/Overlay */ },
+      { id: 'cv-temporal', title: 'Temporal Filters', checkState: 'unchecked', isSubOpen: false, subItems: [
+          { id: 'cv-temporal-hours', title: 'Detections within X hours', checkState: 'unchecked', hasSlider: true /* 1-72 */ },
+          { id: 'cv-temporal-timelapse', title: 'Time-lapse Speed', checkState: 'unchecked', hasSlider: true /* 1x-10x */ },
+          { id: 'cv-temporal-history', title: 'Historical Comparison', checkState: 'unchecked', hasPicker: true /* Side-by-side/Overlay */ },
       ]},
-      { id: 'cv-class', title: 'Object Class Filter', isChecked: false, isSubOpen: false, subItems: [
-          { id: 'cv-class-aircraft', title: 'Aircraft', isChecked: false, subSubItems: [
-              { id: 'cv-class-aircraft-comm', title: 'Commercial', isChecked: false },
-              { id: 'cv-class-aircraft-mil', title: 'Military', isChecked: false },
-              { id: 'cv-class-aircraft-priv', title: 'Private', isChecked: false },
-              { id: 'cv-class-aircraft-unk', title: 'Unknown', isChecked: false },
+      { id: 'cv-class', title: 'Object Class Filter', checkState: 'unchecked', isSubOpen: false, subItems: [
+          { id: 'cv-class-aircraft', title: 'Aircraft', checkState: 'unchecked', subSubItems: [
+              { id: 'cv-class-aircraft-comm', title: 'Commercial', checkState: 'unchecked' },
+              { id: 'cv-class-aircraft-mil', title: 'Military', checkState: 'unchecked' },
+              { id: 'cv-class-aircraft-priv', title: 'Private', checkState: 'unchecked' },
+              { id: 'cv-class-aircraft-unk', title: 'Unknown', checkState: 'unchecked' },
           ]},
-          { id: 'cv-class-maritime', title: 'Maritime Vessels', isChecked: false, subSubItems: [
-              { id: 'cv-class-maritime-cargo', title: 'Cargo', isChecked: false },
-              { id: 'cv-class-maritime-tanker', title: 'Tanker', isChecked: false },
+          { id: 'cv-class-maritime', title: 'Maritime Vessels', checkState: 'unchecked', subSubItems: [
+              { id: 'cv-class-maritime-cargo', title: 'Cargo', checkState: 'unchecked' },
+              { id: 'cv-class-maritime-tanker', title: 'Tanker', checkState: 'unchecked' },
               // ... other vessel types
           ]},
-          { id: 'cv-class-ground', title: 'Ground Vehicles', isChecked: false, subSubItems: [
-              { id: 'cv-class-ground-civ', title: 'Civilian', isChecked: false },
-              { id: 'cv-class-ground-mil', title: 'Military', isChecked: false },
+          { id: 'cv-class-ground', title: 'Ground Vehicles', checkState: 'unchecked', subSubItems: [
+              { id: 'cv-class-ground-civ', title: 'Civilian', checkState: 'unchecked' },
+              { id: 'cv-class-ground-mil', title: 'Military', checkState: 'unchecked' },
               // ... other vehicle types
           ]},
       ]},
-      { id: 'cv-spatial', title: 'Spatial Constraints', isChecked: false, isSubOpen: false, subItems: [
-          { id: 'cv-spatial-bbox', title: 'Map Extent BBox', isChecked: false, hasPicker: true /* Map interaction? */ },
-          { id: 'cv-spatial-alt', title: 'Altitude/Elevation Range', isChecked: false, hasSlider: true },
-          { id: 'cv-spatial-poi', title: 'Proximity to POIs', isChecked: false, hasPicker: true /* Select POIs? */ },
+      { id: 'cv-spatial', title: 'Spatial Constraints', checkState: 'unchecked', isSubOpen: false, subItems: [
+          { id: 'cv-spatial-bbox', title: 'Map Extent BBox', checkState: 'unchecked', hasPicker: true /* Map interaction? */ },
+          { id: 'cv-spatial-alt', title: 'Altitude/Elevation Range', checkState: 'unchecked', hasSlider: true },
+          { id: 'cv-spatial-poi', title: 'Proximity to POIs', checkState: 'unchecked', hasPicker: true /* Select POIs? */ },
       ]},
-      { id: 'cv-output', title: 'Output Metrics', isChecked: false, isSubOpen: false, subItems: [
-          { id: 'cv-output-count', title: 'Detection Count', isChecked: false, hasPicker: true /* per km²/bbox/extent */ },
-          { id: 'cv-output-dist', title: 'Class Distribution', isChecked: false /* Display only? */ },
-          { id: 'cv-output-heatmap', title: 'Heatmap Density', isChecked: false },
-          { id: 'cv-output-stats', title: 'Additional Stats', isChecked: false /* Display only? */ },
+      { id: 'cv-output', title: 'Output Metrics', checkState: 'unchecked', isSubOpen: false, subItems: [
+          { id: 'cv-output-count', title: 'Detection Count', checkState: 'unchecked', hasPicker: true /* per km²/bbox/extent */ },
+          { id: 'cv-output-dist', title: 'Class Distribution', checkState: 'unchecked' /* Display only? */ },
+          { id: 'cv-output-heatmap', title: 'Heatmap Density', checkState: 'unchecked' },
+          { id: 'cv-output-stats', title: 'Additional Stats', checkState: 'unchecked' /* Display only? */ },
       ]},
     ]
   },
   // Weather Section
   {
-    id: 'weather', title: 'Weather', isChecked: false, isOpen: false, items: [
-      { id: 'weather-forecast', title: 'Forecast Layers', isChecked: false, isSubOpen: false, subItems: [
-          { id: 'weather-forecast-time', title: 'Time Window', isChecked: false, hasSlider: true /* 0-72 hrs */ },
-          { id: 'weather-forecast-precip', title: 'Precipitation Type', isChecked: false, hasPicker: true /* rain/snow/hail */ },
-          { id: 'weather-forecast-storm', title: 'Storm Tracking', isChecked: false },
+    id: 'weather', title: 'Weather', checkState: 'unchecked', isOpen: false, items: [
+      { id: 'weather-forecast', title: 'Forecast Layers', checkState: 'unchecked', isSubOpen: false, subItems: [
+          { id: 'weather-forecast-time', title: 'Time Window', checkState: 'unchecked', hasSlider: true /* 0-72 hrs */ },
+          { id: 'weather-forecast-precip', title: 'Precipitation Type', checkState: 'unchecked', hasPicker: true /* rain/snow/hail */ },
+          { id: 'weather-forecast-storm', title: 'Storm Tracking', checkState: 'unchecked' },
       ]},
-      { id: 'weather-sea', title: 'Sea State', isChecked: false, isSubOpen: false, subItems: [
-          { id: 'weather-sea-wave', title: 'Wave Height', isChecked: false, hasSlider: true /* 0-15m */ },
-          { id: 'weather-sea-swell', title: 'Swell Direction', isChecked: false, hasSlider: true /* 0-360 deg */ },
-          { id: 'weather-sea-temp', title: 'Water Temp Anomaly', isChecked: false },
+      { id: 'weather-sea', title: 'Sea State', checkState: 'unchecked', isSubOpen: false, subItems: [
+          { id: 'weather-sea-wave', title: 'Wave Height', checkState: 'unchecked', hasSlider: true /* 0-15m */ },
+          { id: 'weather-sea-swell', title: 'Swell Direction', checkState: 'unchecked', hasSlider: true /* 0-360 deg */ },
+          { id: 'weather-sea-temp', title: 'Water Temp Anomaly', checkState: 'unchecked' },
       ]},
-      { id: 'weather-atmos', title: 'Atmospheric Sensors', isChecked: false, isSubOpen: false, subItems: [
-          { id: 'weather-atmos-wind', title: 'Wind Vectors', isChecked: false },
-          { id: 'weather-atmos-aqi', title: 'Air Quality Index', isChecked: false, hasPicker: true /* PM2.5/CO2 */ },
-          { id: 'weather-atmos-lightning', title: 'Lightning Strike Density', isChecked: false },
+      { id: 'weather-atmos', title: 'Atmospheric Sensors', checkState: 'unchecked', isSubOpen: false, subItems: [
+          { id: 'weather-atmos-wind', title: 'Wind Vectors', checkState: 'unchecked' },
+          { id: 'weather-atmos-aqi', title: 'Air Quality Index', checkState: 'unchecked', hasPicker: true /* PM2.5/CO2 */ },
+          { id: 'weather-atmos-lightning', title: 'Lightning Strike Density', checkState: 'unchecked' },
       ]},
-      { id: 'weather-extreme', title: 'Extreme Events', isChecked: false, isSubOpen: false, subItems: [
-          { id: 'weather-extreme-hurricane', title: 'Hurricane/Cyclone Alerts', isChecked: false },
-          { id: 'weather-extreme-flood', title: 'Flood Risk Zones', isChecked: false, hasSlider: true /* 1-5 severity */ },
-          { id: 'weather-extreme-fire', title: 'Wildfire Smoke Dispersion', isChecked: false },
+      { id: 'weather-extreme', title: 'Extreme Events', checkState: 'unchecked', isSubOpen: false, subItems: [
+          { id: 'weather-extreme-hurricane', title: 'Hurricane/Cyclone Alerts', checkState: 'unchecked' },
+          { id: 'weather-extreme-flood', title: 'Flood Risk Zones', checkState: 'unchecked', hasSlider: true /* 1-5 severity */ },
+          { id: 'weather-extreme-fire', title: 'Wildfire Smoke Dispersion', checkState: 'unchecked' },
       ]},
-      { id: 'weather-climate', title: 'Climate Overlays', isChecked: false, isSubOpen: false, subItems: [
-          { id: 'weather-climate-avg', title: 'Historical Averages', isChecked: false },
-          { id: 'weather-climate-drought', title: 'Drought Index', isChecked: false },
-          { id: 'weather-climate-ice', title: 'Ice Cover Percentage', isChecked: false, hasSlider: true },
+      { id: 'weather-climate', title: 'Climate Overlays', checkState: 'unchecked', isSubOpen: false, subItems: [
+          { id: 'weather-climate-avg', title: 'Historical Averages', checkState: 'unchecked' },
+          { id: 'weather-climate-drought', title: 'Drought Index', checkState: 'unchecked' },
+          { id: 'weather-climate-ice', title: 'Ice Cover Percentage', checkState: 'unchecked', hasSlider: true },
       ]},
     ]
   },
   // Aerial Section
   {
-    id: 'aerial', title: 'Aerial', isChecked: false, isOpen: false, items: [
-       { id: 'aerial-tracking', title: 'Flight Tracking', isChecked: false, isSubOpen: false, subItems: [
-           { id: 'aerial-tracking-alt', title: 'Altitude Range', isChecked: false, hasSlider: true /* 0-50k ft */ },
-           { id: 'aerial-tracking-type', title: 'Aircraft Type', isChecked: false, hasPicker: true /* comm/mil/uav */ },
-           { id: 'aerial-tracking-emerg', title: 'Emergency Status', isChecked: false, hasPicker: true /* mayday/squawk */ },
+    id: 'aerial', title: 'Aerial', checkState: 'unchecked', isOpen: false, items: [
+       { id: 'aerial-tracking', title: 'Flight Tracking', checkState: 'unchecked', isSubOpen: false, subItems: [
+           { id: 'aerial-tracking-alt', title: 'Altitude Range', checkState: 'unchecked', hasSlider: true /* 0-50k ft */ },
+           { id: 'aerial-tracking-type', title: 'Aircraft Type', checkState: 'unchecked', hasPicker: true /* comm/mil/uav */ },
+           { id: 'aerial-tracking-emerg', title: 'Emergency Status', checkState: 'unchecked', hasPicker: true /* mayday/squawk */ },
        ]},
-       { id: 'aerial-imagery', title: 'Imagery Sources', isChecked: false, isSubOpen: false, subItems: [
-           { id: 'aerial-imagery-source', title: 'Satellite vs UAV', isChecked: false, hasPicker: true },
-           { id: 'aerial-imagery-band', title: 'Spectral Band', isChecked: false, hasPicker: true /* RGB/IR */ },
-           { id: 'aerial-imagery-cloud', title: 'Cloud Cover Tolerance', isChecked: false, hasSlider: true /* 0-100% */ },
+       { id: 'aerial-imagery', title: 'Imagery Sources', checkState: 'unchecked', isSubOpen: false, subItems: [
+           { id: 'aerial-imagery-source', title: 'Satellite vs UAV', checkState: 'unchecked', hasPicker: true },
+           { id: 'aerial-imagery-band', title: 'Spectral Band', checkState: 'unchecked', hasPicker: true /* RGB/IR */ },
+           { id: 'aerial-imagery-cloud', title: 'Cloud Cover Tolerance', checkState: 'unchecked', hasSlider: true /* 0-100% */ },
        ]},
-       { id: 'aerial-density', title: 'Density Metrics', isChecked: false, isSubOpen: false, subItems: [
-           { id: 'aerial-density-heatmap', title: 'Flights/Hour Heatmap', isChecked: false },
-           { id: 'aerial-density-noise', title: 'Noise Pollution Contours', isChecked: false },
-           { id: 'aerial-density-airspace', title: 'Restricted Airspace Alerts', isChecked: false },
+       { id: 'aerial-density', title: 'Density Metrics', checkState: 'unchecked', isSubOpen: false, subItems: [
+           { id: 'aerial-density-heatmap', title: 'Flights/Hour Heatmap', checkState: 'unchecked' },
+           { id: 'aerial-density-noise', title: 'Noise Pollution Contours', checkState: 'unchecked' },
+           { id: 'aerial-density-airspace', title: 'Restricted Airspace Alerts', checkState: 'unchecked' },
        ]},
     ]
   },
   // Maritime Section
   {
-    id: 'maritime', title: 'Maritime', isChecked: false, isOpen: false, items: [
-        { id: 'maritime-filters', title: 'Vessel Filters', isChecked: false, isSubOpen: false, subItems: [
-            { id: 'maritime-filters-speed', title: 'Speed Range', isChecked: false, hasSlider: true /* 0-30 knots */ },
-            { id: 'maritime-filters-draft', title: 'Draft Depth', isChecked: false, hasSlider: true /* 1-25m */ },
-            { id: 'maritime-filters-flag', title: 'Flag State', isChecked: false, hasPicker: true },
+    id: 'maritime', title: 'Maritime', checkState: 'unchecked', isOpen: false, items: [
+        { id: 'maritime-filters', title: 'Vessel Filters', checkState: 'unchecked', isSubOpen: false, subItems: [
+            { id: 'maritime-filters-speed', title: 'Speed Range', checkState: 'unchecked', hasSlider: true /* 0-30 knots */ },
+            { id: 'maritime-filters-draft', title: 'Draft Depth', checkState: 'unchecked', hasSlider: true /* 1-25m */ },
+            { id: 'maritime-filters-flag', title: 'Flag State', checkState: 'unchecked', hasPicker: true },
         ]},
-        { id: 'maritime-cargo', title: 'Cargo Metrics', isChecked: false, isSubOpen: false, subItems: [
-            { id: 'maritime-cargo-count', title: 'Container Count Estimate', isChecked: false },
-            { id: 'maritime-cargo-hazmat', title: 'Hazardous Material Flags', isChecked: false },
-            { id: 'maritime-cargo-congestion', title: 'Port Congestion Indicators', isChecked: false },
+        { id: 'maritime-cargo', title: 'Cargo Metrics', checkState: 'unchecked', isSubOpen: false, subItems: [
+            { id: 'maritime-cargo-count', title: 'Container Count Estimate', checkState: 'unchecked' },
+            { id: 'maritime-cargo-hazmat', title: 'Hazardous Material Flags', checkState: 'unchecked' },
+            { id: 'maritime-cargo-congestion', title: 'Port Congestion Indicators', checkState: 'unchecked' },
         ]},
-        { id: 'maritime-env', title: 'Environmental Sensors', isChecked: false, isSubOpen: false, subItems: [
-            { id: 'maritime-env-spill', title: 'Oil Spill Detection', isChecked: false },
-            { id: 'maritime-env-fishing', title: 'Illegal Fishing Alerts', isChecked: false },
-            { id: 'maritime-env-cetacean', title: 'Cetacean Migration Paths', isChecked: false },
+        { id: 'maritime-env', title: 'Environmental Sensors', checkState: 'unchecked', isSubOpen: false, subItems: [
+            { id: 'maritime-env-spill', title: 'Oil Spill Detection', checkState: 'unchecked' },
+            { id: 'maritime-env-fishing', title: 'Illegal Fishing Alerts', checkState: 'unchecked' },
+            { id: 'maritime-env-cetacean', title: 'Cetacean Migration Paths', checkState: 'unchecked' },
         ]},
     ]
   },
   // Land Section
   {
-    id: 'land', title: 'Land', isChecked: false, isOpen: false, items: [
-        { id: 'land-traffic', title: 'Traffic Analytics', isChecked: false, isSubOpen: false, subItems: [
-            { id: 'land-traffic-congestion', title: 'Congestion Level', isChecked: false, hasPicker: true /* low/med/high */ },
-            { id: 'land-traffic-incidents', title: 'Incident Reports', isChecked: false },
-            { id: 'land-traffic-ev', title: 'EV Charging Density', isChecked: false },
+    id: 'land', title: 'Land', checkState: 'unchecked', isOpen: false, items: [
+        { id: 'land-traffic', title: 'Traffic Analytics', checkState: 'unchecked', isSubOpen: false, subItems: [
+            { id: 'land-traffic-congestion', title: 'Congestion Level', checkState: 'unchecked', hasPicker: true /* low/med/high */ },
+            { id: 'land-traffic-incidents', title: 'Incident Reports', checkState: 'unchecked' },
+            { id: 'land-traffic-ev', title: 'EV Charging Density', checkState: 'unchecked' },
         ]},
-        { id: 'land-infra', title: 'Infrastructure', isChecked: false, isSubOpen: false, subItems: [
-            { id: 'land-infra-bridge', title: 'Bridge Weight Limits', isChecked: false },
-            { id: 'land-infra-rail', title: 'Railway Crossing Status', isChecked: false },
-            { id: 'land-infra-power', title: 'Power Grid Load', isChecked: false },
+        { id: 'land-infra', title: 'Infrastructure', checkState: 'unchecked', isSubOpen: false, subItems: [
+            { id: 'land-infra-bridge', title: 'Bridge Weight Limits', checkState: 'unchecked' },
+            { id: 'land-infra-rail', title: 'Railway Crossing Status', checkState: 'unchecked' },
+            { id: 'land-infra-power', title: 'Power Grid Load', checkState: 'unchecked' },
         ]},
-        { id: 'land-terrain', title: 'Terrain Analysis', isChecked: false, isSubOpen: false, subItems: [
-            { id: 'land-terrain-slope', title: 'Slope Angle', isChecked: false, hasSlider: true /* 0-45 deg */ },
-            { id: 'land-terrain-veg', title: 'Vegetation Health (NDVI)', isChecked: false },
-            { id: 'land-terrain-heat', title: 'Urban Heat Island', isChecked: false },
+        { id: 'land-terrain', title: 'Terrain Analysis', checkState: 'unchecked', isSubOpen: false, subItems: [
+            { id: 'land-terrain-slope', title: 'Slope Angle', checkState: 'unchecked', hasSlider: true /* 0-45 deg */ },
+            { id: 'land-terrain-veg', title: 'Vegetation Health (NDVI)', checkState: 'unchecked' },
+            { id: 'land-terrain-heat', title: 'Urban Heat Island', checkState: 'unchecked' },
         ]},
     ]
   },
@@ -272,6 +272,154 @@ const DjinnPage: React.FC = () => {
     });
   };
 
+// --- NEW Helper Functions for Hierarchical Checkbox State ---
+
+type CheckState = 'checked' | 'indeterminate' | 'unchecked';
+
+// Recursively finds a node and updates the checkState of all its descendants
+const updateDescendantStates = (
+  items: SidebarItemData[],
+  targetId: string,
+  newCheckState: CheckState
+): SidebarItemData[] => {
+
+  const updateRecursively = (nodes: SidebarItemData[], isDescendantOfTarget: boolean): SidebarItemData[] => {
+    return nodes.map(node => {
+      let children = node.items ?? node.subItems ?? node.subSubItems;
+      let currentlyIsDescendant = isDescendantOfTarget;
+
+      // If this node is the target, mark its children as descendants
+      if (node.id === targetId) {
+        currentlyIsDescendant = true;
+        // Update the target node itself
+        const updatedNode = { ...node, checkState: newCheckState };
+        const updatedChildren = children ? updateRecursively(children, currentlyIsDescendant) : undefined;
+        // Reconstruct node
+        if (updatedNode.items) updatedNode.items = updatedChildren;
+        else if (updatedNode.subItems) updatedNode.subItems = updatedChildren;
+        else if (updatedNode.subSubItems) updatedNode.subSubItems = updatedChildren;
+        return updatedNode;
+      }
+
+      // If this node is a descendant, update its state
+      if (currentlyIsDescendant) {
+         const updatedNode = { ...node, checkState: newCheckState };
+         const updatedChildren = children ? updateRecursively(children, currentlyIsDescendant) : undefined;
+         // Reconstruct node
+         if (updatedNode.items) updatedNode.items = updatedChildren;
+         else if (updatedNode.subItems) updatedNode.subItems = updatedChildren;
+         else if (updatedNode.subSubItems) updatedNode.subSubItems = updatedChildren;
+         return updatedNode;
+      }
+
+      // Otherwise, just recurse on children without changing current node state
+      const updatedChildren = children ? updateRecursively(children, currentlyIsDescendant) : undefined;
+      if (updatedChildren && updatedChildren !== children) {
+          const updatedNode = { ...node };
+          if (updatedNode.items) updatedNode.items = updatedChildren;
+          else if (updatedNode.subItems) updatedNode.subItems = updatedChildren;
+          else if (updatedNode.subSubItems) updatedNode.subSubItems = updatedChildren;
+          return updatedNode;
+      }
+
+      // If no changes below, return original node
+      return node;
+    });
+  };
+
+  return updateRecursively(items, false); // Start recursion, not initially a descendant
+};
+
+
+// Calculates and applies the correct checkState to all parent nodes based on children
+// Returns the updated array of items
+const calculateAndApplyCheckStates = (items: SidebarItemData[]): SidebarItemData[] => {
+    const calculateNodeState = (node: SidebarItemData): SidebarItemData => {
+        let children = node.items ?? node.subItems ?? node.subSubItems;
+
+        if (!children || children.length === 0) {
+            // Leaf node: state is already set (should be checked/unchecked), just return it
+            // Ensure leaf nodes are never indeterminate
+            return { ...node, checkState: node.checkState === 'indeterminate' ? 'unchecked' : node.checkState };
+        }
+
+        // Recursively ensure children states are calculated first
+        const updatedChildren = children.map(child => calculateNodeState(child));
+
+        // Determine parent state based on updated children
+        const numChildren = updatedChildren.length;
+        const numChecked = updatedChildren.filter(c => c.checkState === 'checked').length;
+        const numIndeterminate = updatedChildren.filter(c => c.checkState === 'indeterminate').length;
+
+        let newCheckState: CheckState;
+        if (numIndeterminate > 0 || (numChecked > 0 && numChecked < numChildren)) {
+            newCheckState = 'indeterminate';
+        } else if (numChecked === numChildren) {
+            newCheckState = 'checked';
+        } else { // numChecked === 0
+            newCheckState = 'unchecked';
+        }
+
+        // Return the node with potentially updated children and its calculated state
+        const updatedNode = { ...node, checkState: newCheckState };
+         if (updatedNode.items) updatedNode.items = updatedChildren;
+         else if (updatedNode.subItems) updatedNode.subItems = updatedChildren;
+         else if (updatedNode.subSubItems) updatedNode.subSubItems = updatedChildren;
+         return updatedNode;
+    };
+
+    // Apply calculation to all top-level items
+    return items.map(item => calculateNodeState(item));
+};
+
+// Helper to find a specific item by ID
+const findItemById = (items: SidebarItemData[], id: string): SidebarItemData | null => {
+    for (const item of items) {
+        if (item.id === id) {
+            return item;
+        }
+        const children = item.items ?? item.subItems ?? item.subSubItems;
+        if (children) {
+            const found = findItemById(children, id);
+            if (found) return found;
+        }
+    }
+    return null;
+};
+
+// Helper to update a single item's state
+const updateSingleItemState = (
+    items: SidebarItemData[],
+    id: string,
+    newCheckState: CheckState
+): SidebarItemData[] => {
+    return items.map(item => {
+        if (item.id === id) {
+            // Ensure leaf nodes don't become indeterminate directly
+            const children = item.items ?? item.subItems ?? item.subSubItems;
+            const finalState = (!children || children.length === 0) && newCheckState === 'indeterminate'
+                                ? 'unchecked' // Or decide based on previous state? Defaulting to unchecked.
+                                : newCheckState;
+            return { ...item, checkState: finalState };
+        }
+        let children = item.items ?? item.subItems ?? item.subSubItems;
+        if (children) {
+            const updatedChildren = updateSingleItemState(children, id, newCheckState);
+            if (updatedChildren !== children) {
+                 const updatedNode = { ...item };
+                 if (updatedNode.items) updatedNode.items = updatedChildren;
+                 else if (updatedNode.subItems) updatedNode.subItems = updatedChildren;
+                 else if (updatedNode.subSubItems) updatedNode.subSubItems = updatedChildren;
+                 return updatedNode;
+            }
+        }
+        return item;
+    });
+};
+
+// --- END NEW Helper Functions ---
+
+
   // NEW Sidebar Handlers
   const handleSidebarToggleOpen = useCallback((id: string) => {
     setSidebarSections(currentSections =>
@@ -284,16 +432,33 @@ const DjinnPage: React.FC = () => {
     );
   }, []);
 
+  // Rewritten handler for hierarchical checkbox logic
   const handleSidebarToggleCheck = useCallback((id: string) => {
-    setSidebarSections(currentSections =>
-      findItemAndUpdate(currentSections, id, item => ({
-        ...item,
-        isChecked: !item.isChecked,
-      }))
-    );
-    console.log(`Item ${id} checked state changed.`);
-    // TODO: Trigger side effects (filtering, layer visibility) based on 'id' and new checked state
-  }, []);
+    setSidebarSections(currentSections => {
+      const clickedItem = findItemById(currentSections, id);
+      if (!clickedItem) return currentSections; // Item not found
+
+      let intermediateState: SidebarItemData[];
+      const children = clickedItem.items ?? clickedItem.subItems ?? clickedItem.subSubItems;
+      const isParent = children && children.length > 0;
+
+      if (isParent) {
+        // Parent node clicked: Update all descendants
+        const newStateForChildren: CheckState = clickedItem.checkState === 'checked' ? 'unchecked' : 'checked';
+        intermediateState = updateDescendantStates(currentSections, id, newStateForChildren);
+      } else {
+        // Leaf node clicked: Toggle its state
+        const newChildState: CheckState = clickedItem.checkState === 'checked' ? 'unchecked' : 'checked';
+        intermediateState = updateSingleItemState(currentSections, id, newChildState);
+      }
+
+      // After any change, recalculate states for the entire tree
+      const finalState = calculateAndApplyCheckStates(intermediateState);
+      console.log(`Item ${id} toggled. Recalculating states.`);
+      // TODO: Trigger side effects based on the finalState if needed
+      return finalState;
+    });
+  }, []); // Dependencies: updateDescendantStates, updateSingleItemState, calculateAndApplyCheckStates, findItemById (implicitly stable)
 
   const handleSidebarInputChange = useCallback((id: string, value: string) => {
     setSidebarSections(currentSections =>

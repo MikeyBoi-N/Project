@@ -2,8 +2,8 @@
 /* These will overwrite frontend/components/layout/Sidebar.module.css */
 
 .sidebarContainer {
-  min-width: 450px; /* Minimum width for the sidebar */
-  width: 450px; /* Or keep existing width from layout if preferred */
+  min-width: 500px; /* Minimum width for the sidebar */
+  width: 500px; /* Or keep existing width from layout if preferred */
   height: 100%; /* Take full height of parent */
   background-color: #131313;
   border-right: rgba(255, 255, 255, 0.295) solid .5px;
@@ -70,6 +70,46 @@
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
 }
+/* Indeterminate state style */
+.customCheckbox.indeterminate {
+  /* Optional: Slightly different background/border for indeterminate? */
+  /* background-color: #505050; */
+  /* border-color: #777; */
+}
+
+/* Dash for indeterminate state */
+.customCheckbox.indeterminate::after {
+    content: '';
+    position: absolute;
+    left: 2px; /* Adjust horizontal position */
+    top: 50%; /* Center vertically */
+    width: 8px; /* Width of the dash */
+    height: 2px; /* Thickness of the dash */
+    background-color: #B3B3B3; /* Dash color, same as checkmark */
+    transform: translateY(-50%);
+    border: none; /* Remove any border from checkmark style */
+    transform-origin: center; /* Ensure rotation/scaling is centered if needed */
+    /* Override checkmark rotation if necessary */
+    /* transform: translateY(-50%) rotate(0deg); */
+}
+
+/* Ensure checkmark doesn't show when indeterminate */
+.customCheckbox.indeterminate.checked::after {
+    /* This selector might be needed if .checked is also applied */
+    /* Re-apply indeterminate styles or hide checkmark */
+     content: ''; /* Re-assert content for dash */
+     /* Re-apply all dash styles from .customCheckbox.indeterminate::after */
+     position: absolute;
+     left: 2px;
+     top: 50%;
+     width: 8px;
+     height: 2px;
+     background-color: #B3B3B3;
+     transform: translateY(-50%);
+     border: none;
+}
+
+
 
 
 .sidebarItemTitle {
