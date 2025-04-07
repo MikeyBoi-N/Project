@@ -1,252 +1,227 @@
-import React, { useState, useEffect, ReactNode, ChangeEvent } from 'react';
-import { ResizableBox, ResizeCallbackData } from 'react-resizable';
-import { useRouter } from 'next/router';
-import styles from '../../styles/Layout.module.css'; // Adjust path if needed
-import ScrollableContent from '../common/ScrollableContent'; // Import the new component
-import SidebarItem from '../common/SidebarItem'; // Import the new item component
+import React from 'react'; // Removed useState, useCallback as they are not used internally here
+import styles from './Sidebar.module.css'; // Import CSS module for layout sidebar
 
-// Import default styles for react-resizable
-// It's often better to import this in a global CSS file (_app.tsx)
-// but for simplicity here, we'll assume it's handled or add it later if needed.
-// import 'react-resizable/css/styles.css'; // We'll add this styling to Layout.module.css instead
+// --- TypeScript Interfaces ---
 
-const SIDEBAR_WIDTH_STORAGE_KEY = 'sidebarWidth';
-const DEFAULT_SIDEBAR_WIDTH = 450;
-const MIN_SIDEBAR_WIDTH = 150;
-const MAX_SIDEBAR_WIDTH = 1000; // Updated max width
-
-// Define Props interface for type safety and clarity
-export interface SidebarProps {
-  confidenceThreshold: number;
-  visOptions: {
-    colorByClass: boolean;
-    showConfidence: boolean;
-  };
-  isGeoFilterActive: boolean;
-  selectedDetection: object | null; // Data for the currently selected detection (display only)
-  objectCount: number | null; // Count of currently visible objects (display only)
-  onConfidenceChange: (event: ChangeEvent<HTMLInputElement>) => void; // Pass the event directly
-  onVisOptionChange: (optionName: keyof SidebarProps['visOptions'], event: ChangeEvent<HTMLInputElement>) => void; // Pass the event directly
-  onGeoFilterToggle: () => void;
-  onSaveFilters?: () => void; // Added for saving filters
-  onLoadFilters?: () => void; // Added for loading filters
+// Interface for the data structure of a single sidebar item
+export interface SidebarItemData {
+  id: string;
+  title: string;
+  isChecked: boolean;
+  isOpen?: boolean; // Top-level items might use this
+  isSubOpen?: boolean; // Nested items might use this
+  items?: SidebarItemData[]; // For top-level children
+  subItems?: SidebarItemData[]; // For first level nesting
+  subSubItems?: SidebarItemData[]; // For second level nesting
+  hasInput?: boolean;
+  inputValue?: number | string; // Allow string for input state, convert on change
+  hasPicker?: boolean;
+  hasSlider?: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({
-  confidenceThreshold,
-  visOptions,
-  isGeoFilterActive,
-  selectedDetection,
-  objectCount,
-  onConfidenceChange,
-  onVisOptionChange,
-  onGeoFilterToggle,
-  onSaveFilters, // Destructure new prop
-  onLoadFilters, // Destructure new prop
+// Props for the SidebarItem component
+interface SidebarItemProps {
+  item: SidebarItemData;
+  level?: number;
+  onToggleOpen: (id: string) => void;
+  onToggleCheck: (id: string) => void;
+  onInputChange: (id: string, value: string) => void; // Input value is string
+}
+
+// Props for the main Sidebar component - Adjusted to match expected props in Layout/DjinnPage
+export interface SidebarProps {
+  sections: SidebarItemData[]; // Renamed from sidebarProps in Layout to sections for consistency
+  onToggleOpen: (id: string) => void;
+  onToggleCheck: (id: string) => void;
+  onInputChange: (id: string, value: string) => void;
+  // Add any other props the Layout component expects to pass down, if necessary
+  // For now, assuming these are the core props based on the Testing Grounds logic
+  // Add handlers for save/load if they are managed by the parent and passed down
+  onSaveFilters?: () => void;
+  onLoadFilters?: () => void;
+}
+
+
+// --- Sidebar Item Component ---
+
+const SidebarItem: React.FC<SidebarItemProps> = ({
+  item,
+  level = 0,
+  onToggleOpen,
+  onToggleCheck,
+  onInputChange,
 }) => {
-  const router = useRouter();
-  const [width, setWidth] = useState<number>(DEFAULT_SIDEBAR_WIDTH);
+  // Determine if the item has any children in any of the possible arrays
+  const hasChildren = (item.items && item.items.length > 0) ||
+                      (item.subItems && item.subItems.length > 0) ||
+                      (item.subSubItems && item.subSubItems.length > 0);
 
-  // State is now managed by the parent component and passed via props.
-  // Local state for width remains.
+  // Determine if the item is currently open
+  const isOpen = item.isOpen ?? item.isSubOpen ?? false; // Use nullish coalescing
 
-  // --- Djinn Event Handlers ---
+  // Determine which array holds the children, default to empty array if none
+  let childItems: SidebarItemData[] = [];
+  if (item.items) childItems = item.items;
+  else if (item.subItems) childItems = item.subItems;
+  else if (item.subSubItems) childItems = item.subSubItems;
 
-  const handleConfidenceChange = (event: ChangeEvent<HTMLInputElement>) => {
-    // Call the handler passed down from the parent
-    onConfidenceChange(event);
+  // --- Event Handlers ---
+
+  const handleToggleCheck = (e: React.MouseEvent<HTMLSpanElement>) => {
+    e.stopPropagation(); // Prevent triggering open/close
+    onToggleCheck(item.id);
   };
 
-  const handleVisOptionChange = (optionName: keyof SidebarProps['visOptions'], event: ChangeEvent<HTMLInputElement>) => {
-    // Call the handler passed down from the parent
-    onVisOptionChange(optionName, event);
+  const handleToggleOpen = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Only toggle open/close if clicking the header itself or title/arrow
+     if (e.target === e.currentTarget ||
+         (e.target as HTMLElement).classList.contains(styles.sidebarItemTitle) ||
+         (e.target as HTMLElement).classList.contains(styles.sidebarItemToggle) ) {
+        if (hasChildren) {
+            onToggleOpen(item.id);
+        }
+     }
   };
 
-  const handleGeoFilterToggle = () => {
-    // Call the handler passed down from the parent
-    onGeoFilterToggle();
-  };
-  // --- End Djinn ---
-
-  // Load initial width from localStorage
-  useEffect(() => {
-    const savedWidth = localStorage.getItem(SIDEBAR_WIDTH_STORAGE_KEY);
-    if (savedWidth) {
-      const parsedWidth = parseInt(savedWidth, 10);
-      if (!isNaN(parsedWidth) && parsedWidth >= MIN_SIDEBAR_WIDTH && parsedWidth <= MAX_SIDEBAR_WIDTH /* Use literal here or ensure constant is updated */) { // Adjusted max width check
-        setWidth(parsedWidth);
-      }
-    }
-  }, []);
-
-  // Save width to localStorage on change
-  useEffect(() => {
-    localStorage.setItem(SIDEBAR_WIDTH_STORAGE_KEY, String(width));
-  }, [width]);
-
-  const onResize: (event: React.SyntheticEvent, data: ResizeCallbackData) => void = (event, { size }) => {
-    // Ensure width stays within bounds during resize
-    const newWidth = Math.max(MIN_SIDEBAR_WIDTH, Math.min(size.width, MAX_SIDEBAR_WIDTH /* Use literal here or ensure constant is updated */)); // Adjusted max width constraint
-    setWidth(newWidth);
+  const handleInputChangeInternal = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation(); // Prevent header click
+    onInputChange(item.id, e.target.value);
   };
 
-  // Define sidebar links (empty as per original)
-  const navItems: { name: string; path: string }[] = [];
+  // Stop propagation for placeholder clicks
+  const stopPropagation = (e: React.MouseEvent) => e.stopPropagation();
 
-  // Placeholder content removed - Replaced with specific feature sections below
+  // --- Render ---
 
   return (
-    <ResizableBox
-      width={width}
-      height={Infinity} // Let the container control the height
-      axis="x" // Allow resizing horizontally
-      minConstraints={[MIN_SIDEBAR_WIDTH, Infinity]}
-      maxConstraints={[MAX_SIDEBAR_WIDTH, Infinity]} // Updated max width constraint directly
-      handle={<span className={styles.customResizeHandle} />} // Custom handle style
-      resizeHandles={['e']} // Show handle on the east (right) side
-      onResize={onResize}
-      className={styles.sidebarResizableContainer} // Add a class for potential styling
-    >
-      {/* The actual sidebar nav element */}
-      <nav className={styles.sidebar} style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
-        {/* Use the reusable ScrollableContent component */}
-        <ScrollableContent className={styles.sidebarScrollableArea}>
-          {/* Wrap nav items */}
-          {navItems.map((item) => {
-            const isActive = router.pathname === item.path;
-            const linkClassName = isActive
-              ? `${styles.sidebarLink} ${styles.sidebarLinkActive}`
-              : styles.sidebarLink;
+    // Using layout sidebar CSS module class names
+    <div className={`${styles.sidebarItem} ${styles[`level-${level}`] ?? ''}`}>
+      <div className={styles.sidebarItemHeader} onClick={handleToggleOpen}>
+        {/* Custom Checkbox */}
+        <span
+          className={`${styles.customCheckbox} ${item.isChecked ? styles.checked : ''}`}
+          onClick={handleToggleCheck}
+          role="checkbox"
+          aria-checked={item.isChecked}
+          aria-labelledby={`title-${item.id}`} // Accessibility
+        ></span>
 
-            return (
-              <SidebarItem key={item.name}>
-                <a href={item.path} className={linkClassName}> {/* Use <a> for simplicity */}
-                  {item.name}
-                </a>
-              </SidebarItem>
-            );
-          })}
-          {/* Add Placeholder Content */}
-          {/* --- Detection Filters --- */}
-          <h3>Detection Filters</h3>
+        {/* Item Title */}
+        <span id={`title-${item.id}`} className={styles.sidebarItemTitle}>{item.title}</span>
 
-          {/* 2. Confidence Score Threshold */}
-          <h4>Confidence Threshold</h4>
-          <SidebarItem>
-            <div>
-              <label htmlFor="confidence-slider" style={{ marginRight: '8px' }}>Min Confidence:</label>
-              <input
-                type="range"
-                id="confidence-slider"
-                name="confidence"
-                min="0"
-                max="1"
-                step="0.01"
-                value={confidenceThreshold} // Use prop
-                onChange={handleConfidenceChange}
-                style={{ verticalAlign: 'middle', cursor: 'pointer' }}
-              />
-              {/* Display current value, formatted to 2 decimal places */}
-              <span style={{ marginLeft: '8px', fontVariantNumeric: 'tabular-nums' }}>
-                {typeof confidenceThreshold === 'number' ? confidenceThreshold.toFixed(2) : 'N/A'} {/* Use prop, added check */}
-              </span>
-            </div>
-          </SidebarItem>
-
-        {/* 5. Geographic Filtering */}
-        <h4>Geographic Filter</h4>
-        <SidebarItem>
-            <button
-              className={`${styles.sidebarButton} ${isGeoFilterActive ? styles.sidebarButtonActive : ''}`}
-              onClick={handleGeoFilterToggle}
-            >
-              {isGeoFilterActive ? 'Cancel Area Draw' : 'Draw Area to Filter'} {/* Use prop */}
-            </button>
-        </SidebarItem>
-          {/* --- Filter Presets --- */}
-          {(onSaveFilters || onLoadFilters) && (
-            <>
-              <h3>Filter Presets</h3>
-              <SidebarItem>
-                {onSaveFilters && (
-                  <button
-                    className={styles.sidebarButton}
-                    onClick={onSaveFilters}
-                    style={{ marginRight: '8px' }} // Add some spacing
-                  >
-                    Save Current Filters
-                  </button>
-                )}
-                {onLoadFilters && (
-                  <button
-                    className={styles.sidebarButton}
-                    onClick={onLoadFilters}
-                  >
-                    Load Saved Filters
-                  </button>
-                )}
-                )
-            </SidebarItem>
-          </>
+        {/* Confidence Score Input */}
+        {item.hasInput && (
+          <div className={styles.confidenceContainer} onClick={stopPropagation}>
+            <input
+              type="number"
+              className={styles.confidenceInput}
+              value={item.inputValue ?? ''} // Use empty string if undefined
+              onChange={handleInputChangeInternal}
+              min="0"
+              max="100"
+              step="1"
+              aria-label={`Confidence score for ${item.title}`} // Accessibility
+            />
+          </div>
         )}
 
-          {/* --- Visualization Options --- */}
-          <h3>Visualization Options</h3>
+        {/* Theme Picker Placeholder */}
+        {item.hasPicker && (
+          <div
+            className={styles.themePickerPlaceholder}
+            onClick={stopPropagation}
+            role="button"
+            aria-label={`Theme picker for ${item.title}`} // Accessibility
+          >
+            {/* Placeholder visual */}
+          </div>
+        )}
 
-          {/* 3. Bounding Box Visualization Options */}
-          <h4>Bounding Box Style</h4>
-          <SidebarItem>
-            <div>
-              <label style={{ display: 'block', marginBottom: '4px', cursor: 'pointer' }}>
-                <input
-                  type="checkbox"
-                  style={{ marginRight: '4px', verticalAlign: 'middle' }}
-                  checked={visOptions?.colorByClass ?? false} // Use prop, added check
-                  onChange={(e) => handleVisOptionChange('colorByClass', e)}
-                /> Color-code by Class
-              </label>
-            </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '4px', cursor: 'pointer' }}>
-                <input
-                  type="checkbox"
-                  style={{ marginRight: '4px', verticalAlign: 'middle' }}
-                  checked={visOptions?.showConfidence ?? false} // Use prop, added check
-                  onChange={(e) => handleVisOptionChange('showConfidence', e)}
-                /> Show Confidence Labels
-              </label>
-            </div>
-          </SidebarItem>
+        {/* Opacity Slider Placeholder */}
+        {item.hasSlider && (
+          <div
+            className={styles.opacitySliderPlaceholder}
+            onClick={stopPropagation}
+            role="slider" // Consider a more interactive element later
+            aria-label={`Opacity slider for ${item.title}`} // Accessibility
+          >
+            {/* Placeholder visual */}
+          </div>
+        )}
 
-          {/* --- Detection Info --- */}
-          <h3>Detection Info</h3>
+        {/* Toggle Arrow */}
+        {hasChildren && (
+          <span
+            className={`${styles.sidebarItemToggle} ${isOpen ? styles.open : ''}`}
+            aria-hidden="true" // Decorative element
+            onClick={(e) => { // Allow clicking arrow specifically to toggle
+                e.stopPropagation();
+                handleToggleOpen(e as any); // Cast needed as it expects div event
+            }}
+          >
+            {'>'}
+          </span>
+        )}
+      </div>
 
-          {/* 6. Object Counting */}
-          <h4>Visible Detections</h4>
-          <SidebarItem>
-              <p>Count: <span style={{ fontWeight: 'bold' }}>{objectCount ?? 'N/A'}</span></p> {/* Use prop */}
-          </SidebarItem>
-
-          {/* 4. Displaying Metadata (Selected Detection) */}
-          <h4>Selected Detection</h4>
-          <SidebarItem>
-            {/* TODO: Populate this based on map selection event */}
-            <div style={{ minHeight: '50px', border: '1px dashed #555', padding: '5px', background: '#2a2a2a', overflowWrap: 'break-word' }}>
-              {selectedDetection ? ( /* Use prop */
-                <pre style={{ margin: 0, fontSize: '0.8em', color: '#ddd', whiteSpace: 'pre-wrap' }}>
-                  {JSON.stringify(selectedDetection, null, 2)}
-                </pre>
-              ) : (
-                <p style={{ margin: 0, fontSize: '0.9em', color: '#aaa' }}>
-                  [Select a detection on the map to see details]
-                </p>
-              )}
-            </div>
-          </SidebarItem>
-        </ScrollableContent>
-      </nav>
-    </ResizableBox>
+      {/* Nested Items */}
+      {hasChildren && isOpen && (
+        <div className={styles.sidebarItemContent}>
+          {childItems.map(child => (
+            <SidebarItem
+              key={child.id}
+              item={child}
+              level={level + 1}
+              onToggleOpen={onToggleOpen}
+              onToggleCheck={onToggleCheck}
+              onInputChange={onInputChange}
+            />
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 
-export default Sidebar;
+
+// --- Main Sidebar Component ---
+
+const Sidebar: React.FC<SidebarProps> = ({
+  sections,
+  onToggleOpen,
+  onToggleCheck,
+  onInputChange,
+  onSaveFilters, // Receive save handler
+  onLoadFilters, // Receive load handler
+}) => {
+  // Note: The state management (useState, useCallback for handlers)
+  // should reside in the parent component (e.g., DjinnPage or Layout)
+  // This component just receives the data and handlers as props.
+
+  return (
+    // Using layout sidebar CSS module class names
+    <aside className={styles.sidebarContainer}>
+       {/* Optional: Add a title or header if the layout sidebar needs one */}
+       {/* <h2 className={styles.sidebarTitle}>Layers & Filters</h2> */}
+      {sections.map(section => (
+        <SidebarItem
+          key={section.id}
+          item={section}
+          level={0} // Top-level items are level 0
+          onToggleOpen={onToggleOpen}
+          onToggleCheck={onToggleCheck}
+          onInputChange={onInputChange}
+        />
+      ))}
+       {/* Render Save/Load buttons if handlers are provided */}
+       {(onSaveFilters || onLoadFilters) && (
+         <div className={styles.filterActions}>
+           {onSaveFilters && <button onClick={onSaveFilters}>Save Filters</button>}
+           {onLoadFilters && <button onClick={onLoadFilters}>Load Filters</button>}
+         </div>
+       )}
+    </aside>
+  );
+};
+
+export default Sidebar; // Export the main component

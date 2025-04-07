@@ -1,0 +1,183 @@
+/* Styles adapted from Testing_Grounds/src/App.css for the LAYOUT sidebar */
+/* These will overwrite frontend/components/layout/Sidebar.module.css */
+
+.sidebarContainer {
+  width: 450px; /* Or keep existing width from layout if preferred */
+  height: 100%; /* Take full height of parent */
+  background-color: #131313;
+  border-right: rgba(255, 255, 255, 0.295) solid .5px;
+  padding: 15px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto; /* Allow scrolling */
+  color: #B3B3B3; /* Default text color */
+}
+
+/* Optional Title Style */
+.sidebarTitle {
+    font-size: 1.1em;
+    color: #e0e0e0;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #444;
+}
+
+.sidebarItem { /* Applies to all levels */
+  background-color: #00000052;
+  border-radius: 7px;
+  padding: 10px 15px;
+  box-sizing: border-box;
+}
+
+.sidebarItemHeader {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  min-height: 20px;
+  gap: 10px; /* Space between checkbox, title, controls */
+}
+
+.customCheckbox {
+  width: 14px;
+  height: 14px;
+  background-color: #363636;
+  border-radius: 1px;
+  display: inline-block;
+  flex-shrink: 0; /* Prevent shrinking */
+  border: 2px solid transparent;
+  box-sizing: border-box;
+  cursor: pointer;
+  position: relative; /* For pseudo-element checkmark */
+}
+
+.customCheckbox.checked {
+  background-color: rgba(54, 54, 54, 0); /* Transparent background */
+  border: 2px solid #363636;
+}
+
+/* Optional: Add a visual checkmark */
+.customCheckbox.checked::after {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 0px;
+    width: 4px;
+    height: 8px;
+    border: solid #B3B3B3; /* Checkmark color */
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+
+.sidebarItemTitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #B3B3B3;
+  flex-grow: 1; /* Takes up available space */
+  white-space: nowrap; /* Prevent wrapping */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: none; /* Prevent text selection on click */
+}
+
+.sidebarItemToggle {
+  font-family: 'Anonymous Pro', monospace;
+  font-size: 16px;
+  color: #FFFFFF;
+  transition: transform 0.2s ease-in-out;
+  margin-left: auto; /* Push to the far right */
+  padding-left: 5px; /* Space from title/input */
+  flex-shrink: 0;
+  cursor: pointer;
+  width: 16px; /* Consistent width */
+  text-align: center;
+  line-height: 1; /* Adjust for vertical alignment */
+  user-select: none; /* Prevent text selection on click */
+}
+
+.sidebarItemToggle.open {
+  transform: rotate(90deg);
+}
+
+.sidebarItemContent {
+  padding-left: 24px; /* Indentation for nested items (checkbox width + gap) */
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Space between nested items */
+}
+
+/* Confidence Score Container/Input */
+.confidenceContainer {
+  margin-left: 5px; /* Reduced margin */
+  display: flex;
+  align-items: center;
+  padding-left: 5px; /* Space from title */
+  flex-shrink: 0;
+}
+
+.confidenceInput {
+  background-color: #B2B2B2;
+  border-radius: 4px;
+  border: none;
+  color: #333; /* Darker text for better contrast */
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  padding: 3px 6px;
+  width: 35px;
+  text-align: center;
+  box-sizing: border-box;
+}
+/* Remove browser default arrows for number input */
+.confidenceInput::-webkit-outer-spin-button,
+.confidenceInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.confidenceInput[type=number] {
+  -moz-appearance: textfield; /* Firefox */
+}
+
+
+/* Theme Picker / Opacity Slider Placeholders */
+.themePickerPlaceholder,
+.opacitySliderPlaceholder {
+  margin-left: 5px; /* Reduced margin */
+  padding-left: 5px; /* Space from title */
+  flex-shrink: 0;
+  /* Add basic placeholder styles */
+  width: 60px;
+  height: 15px;
+  background-color: #555;
+  border-radius: 4px;
+  display: inline-block; /* Ensure it stays in the flex row */
+  cursor: pointer; /* Indicate interactivity */
+}
+
+/* Optional Filter Actions Styles */
+.filterActions {
+    margin-top: auto; /* Push to bottom */
+    padding-top: 15px;
+    border-top: 1px solid #444;
+    display: flex;
+    gap: 10px;
+    justify-content: space-around;
+}
+
+.filterActions button {
+    padding: 8px 12px;
+    background-color: #333;
+    color: #eee;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    flex-grow: 1; /* Make buttons share space */
+    text-align: center;
+}
+
+.filterActions button:hover {
+    background-color: #444;
+}
