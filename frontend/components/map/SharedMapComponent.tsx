@@ -1,7 +1,8 @@
-import React, { useState, useEffect, MutableRefObject } from 'react'; // Added MutableRefObject
+import React, { useState, useEffect, useRef, useCallback, MutableRefObject } from 'react'; // Added useState, useRef, useCallback
+import { toast } from 'react-toastify'; // Import toast for notifications
 import { useAuth } from '../../context/AuthContext'; // Import useAuth
 import { MapContainer, TileLayer, Marker, Popup, Polygon, CircleMarker, Tooltip } from 'react-leaflet'; // Added CircleMarker, Tooltip
-import L, { Map, LatLngExpression } from 'leaflet'; // Added Map type and LatLngExpression
+import L, { Map, LatLngExpression, LatLng, LeafletMouseEvent, Polyline } from 'leaflet'; // Added LatLng, LeafletMouseEvent, Polyline
 import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
 import { StyleOption } from './LayersMenu'; // Import StyleOption type
@@ -9,6 +10,7 @@ import FilterButtons from './FilterButtons'; // Import the new filter buttons
 import SearchBar from './SearchBar'; // Import the search bar
 import ContextWindowPlaceholder from './ContextWindowPlaceholder'; // Import the placeholder
 import styles from '../../styles/MapPage.module.css'; // Import CSS module for styling
+import MapContextMenu from './MapContextMenu'; // Import the context menu component
 // Fix for default marker icon issue
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
@@ -101,6 +103,17 @@ const SharedMapComponent: React.FC<SharedMapComponentProps> = ({ tileLayerInfo, 
     const { isGuest } = useAuth(); // Get guest status
     const guestViewportKey = 'guestMapViewport'; // Key for center/zoom
     const guestStyleKey = 'guestMapStyleId'; // Key for style ID
+
+    // --- Context Menu State ---
+    const [isContextMenuVisible, setIsContextMenuVisible] = useState(false);
+    const [contextMenuPosition, setContextMenuPosition] = useState({ top: 0, left: 0 });
+    const [contextMenuLatLng, setContextMenuLatLng] = useState<LatLng | null>(null);
+
+    // --- Measurement State ---
+    const [isMeasuring, setIsMeasuring] = useState(false);
+    const [measurementPoints, setMeasurementPoints] = useState<LatLng[]>([]);
+    const [measurementLayer, setMeasurementLayer] = useState<Polyline | null>(null);
+    const [currentDistance, setCurrentDistance] = useState<number>(0);
 
     // Effect to load map VIEWPORT state for guests from sessionStorage
     useEffect(() => {
@@ -214,6 +227,140 @@ const SharedMapComponent: React.FC<SharedMapComponentProps> = ({ tileLayerInfo, 
         fetchFootprintData();
     }, []); // Dependency array might need adjustment if fetching depends on other props/state
 
+    // --- Context Menu Logic ---
+    const handleCloseContextMenu = useCallback(() => {
+        setIsContextMenuVisible(false);
+        setContextMenuLatLng(null);
+    }, []);
+
+    // Effect to handle map context menu event and clicks outside the menu
+    useEffect(() => {
+        const map = mapRef.current;
+        if (!map) return;
+
+        const handleContextMenu = (e: LeafletMouseEvent) => {
+            e.originalEvent.preventDefault(); // Prevent default browser menu
+            setContextMenuPosition({ top: e.containerPoint.y, left: e.containerPoint.x });
+            setContextMenuLatLng(e.latlng);
+            setIsContextMenuVisible(true);
+            logger.debug(`Context menu opened at: ${e.latlng}, position:`, e.containerPoint);
+        };
+
+        const handleClick = (e: LeafletMouseEvent) => {
+            // Close context menu if open
+            if (isContextMenuVisible) {
+                handleCloseContextMenu();
+                return; // Don't process measurement click if context menu was just closed
+            }
+
+            // Handle measurement clicks
+            if (isMeasuring) {
+                const newPoint = e.latlng;
+                const updatedPoints = [...measurementPoints, newPoint];
+                setMeasurementPoints(updatedPoints);
+
+                let distance = 0;
+                for (let i = 1; i < updatedPoints.length; i++) {
+                    distance += updatedPoints[i-1].distanceTo(updatedPoints[i]);
+                }
+                setCurrentDistance(distance);
+                const distanceKm = (distance / 1000).toFixed(2);
+
+                if (measurementLayer) {
+                    measurementLayer.setLatLngs(updatedPoints);
+                    measurementLayer.bindTooltip(`Distance: ${distanceKm} km`).openTooltip();
+                } else {
+                    const newLayer = L.polyline(updatedPoints, { color: 'red', weight: 3 })
+                        .addTo(map)
+                        .bindTooltip(`Distance: ${distanceKm} km`, { permanent: true, direction: 'center' }) // Make tooltip permanent
+                        .openTooltip();
+                    setMeasurementLayer(newLayer);
+                }
+                logger.debug(`Measurement point added: ${newPoint}. Total points: ${updatedPoints.length}. Distance: ${distanceKm} km`);
+            }
+        };
+
+        const handleDoubleClick = () => {
+            if (isMeasuring) {
+                logger.debug('Measurement finished via double-click.');
+                setIsMeasuring(false);
+                // Optionally make the tooltip permanent or display final distance
+                if (measurementLayer) {
+                    const finalDistanceKm = (currentDistance / 1000).toFixed(2);
+                    measurementLayer.unbindTooltip(); // Remove temporary tooltip
+                    measurementLayer.bindPopup(`<b>Final Distance:</b> ${finalDistanceKm} km`).openPopup(); // Add a popup instead
+                }
+                // Reset points for next measurement? Or keep layer until cleared? For now, keep layer.
+                // setMeasurementPoints([]);
+                // setMeasurementLayer(null);
+                // setCurrentDistance(0);
+                toast.success(`Measurement complete: ${(currentDistance / 1000).toFixed(2)} km`, { containerId: 'mapNotifications' });
+                // TODO: Reset map cursor style
+            }
+        };
+
+        map.on('contextmenu', handleContextMenu);
+        map.on('click', handleClick); // Handles closing context menu AND measurement clicks
+        map.on('dblclick', handleDoubleClick); // Finish measurement on double-click
+
+        // Cleanup listeners
+        return () => {
+            map.off('contextmenu', handleContextMenu);
+            map.off('click', handleClick);
+            map.off('dblclick', handleDoubleClick);
+            map.off('click', handleClick);
+        };
+        // Re-run if map instance changes or if visibility/measurement state changes
+    }, [mapRef, isContextMenuVisible, handleCloseContextMenu, isMeasuring]); // Added isMeasuring dependency
+
+
+    // --- Action Handlers ---
+    const handleCopyCoords = useCallback((latLng: LatLng) => {
+        const coordsText = `${latLng.lat.toFixed(6)}, ${latLng.lng.toFixed(6)}`;
+        navigator.clipboard.writeText(coordsText)
+            .then(() => {
+                logger.debug('Coordinates copied to clipboard:', coordsText);
+                toast.success(`Coordinates copied: ${coordsText}`, { containerId: 'mapNotifications', autoClose: 2000 });
+            })
+            .catch(err => {
+                logger.error('Failed to copy coordinates:', err);
+                toast.error('Failed to copy coordinates.', { containerId: 'mapNotifications' });
+            });
+    }, []);
+
+    const handleMeasureDistance = useCallback((startLatLng: LatLng) => {
+        logger.debug('Action: Measure Distance Start at', startLatLng);
+        setIsMeasuring(true);
+        setMeasurementPoints([startLatLng]); // Start with the clicked point
+        setCurrentDistance(0);
+        if (measurementLayer && mapRef.current) {
+             mapRef.current.removeLayer(measurementLayer); // Clear previous layer
+             setMeasurementLayer(null);
+        }
+        // TODO: Change map cursor style
+        toast.info('Click on the map to add points. Double-click to finish.', { containerId: 'mapNotifications', autoClose: 3000 });
+    }, []);
+
+    const handleAddPoint = useCallback((latLng: LatLng) => {
+        logger.debug('Action: Add Point at', latLng);
+        const map = mapRef.current;
+        if (map) {
+            L.marker(latLng)
+                .addTo(map)
+                .bindPopup(`Added Point: ${latLng.lat.toFixed(4)}, ${latLng.lng.toFixed(4)}`);
+            toast.info('Point added to map.', { containerId: 'mapNotifications', autoClose: 1500 });
+        } else {
+            logger.error('Map instance not available to add point.');
+            toast.error('Could not add point: Map not ready.', { containerId: 'mapNotifications' });
+        }
+    }, []);
+
+    const handleGenerateIsochrone = useCallback((latLng: LatLng) => {
+        logger.debug('Action: Generate Isochrone (WIP)', latLng);
+        // TODO: Implement isochrone logic (Phase 4 - Placeholder)
+        alert('Generate Isochrone (WIP - Placeholder)');
+    }, []);
+
     // REMOVED: Internal theme state (isDarkMode) and toggle button
 
     return (
@@ -278,6 +425,19 @@ const SharedMapComponent: React.FC<SharedMapComponentProps> = ({ tileLayerInfo, 
                     })}
                 </MapContainer>
             )}
+            {/* Render Context Menu */}
+            <MapContextMenu
+                top={contextMenuPosition.top}
+                left={contextMenuPosition.left}
+                isVisible={isContextMenuVisible}
+                latLng={contextMenuLatLng}
+                onClose={handleCloseContextMenu}
+                onCopyCoords={handleCopyCoords}
+                onMeasureDistance={handleMeasureDistance}
+                onAddPoint={handleAddPoint}
+                onGenerateIsochrone={handleGenerateIsochrone}
+            />
+
             {/* New Overlay Container for Controls */}
             <div className={styles.mapControlsOverlay}>
             </div>
