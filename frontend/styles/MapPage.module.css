@@ -83,21 +83,21 @@
 .filterButton {
     padding: 5px 10px;
     background-color: #0e0e0e;
-    border-color: #0e0e0e;
     color: #797979; /* text color #333333 */
-    border-radius: 7px; /* Pill shape */
+    border-radius: 5px; /* Pill shape */
     cursor: pointer;
     font-size: 0.9rem;
+    border: none;
+    transition: background-color 0.2s ease;
+    padding: 8px 12px; /* Adjust padding for better touch targets */
 }
 
 .filterButton:hover {
     background-color: #222222;
-    border-color: #222222
 }
 
 .filterButton.selected {
-    background-color: #474747; /* Example selected color */
-    border-color: #474747;
+    background-color: #454545;; /* Example selected color */
     color: white; /* Example selected text color */
 }
 
