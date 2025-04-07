@@ -2,7 +2,7 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile # We'll create this Dockerfile next
+      dockerfile: Dockerfile.dev # Use the development Dockerfile
     container_name: selkie_backend
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload # Run FastAPI with reload for dev
     volumes:

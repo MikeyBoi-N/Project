@@ -151,16 +151,34 @@
 .guestLink {
   font-family: 'Anonymous Pro', monospace;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.8); /* Slightly brighter than terms */
-  text-decoration: none;
+  text-decoration: underline; /* Underlined by default */
   margin-top: 15px; /* Space above the link */
   cursor: pointer;
   transition: color 0.2s ease;
 }
 
 .guestLink:hover {
-  color: #FFFFFF; /* White on hover */
+  /* text-decoration: underline; */ /* Removed as it's underlined by default */
+}
+
+/* Style for the switch between Login/Register */
+.switchButton {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0 0 0 4px; /* Small left margin for spacing */
+  color: rgba(255, 255, 255, 0.8); /* Match guestLink color */
   text-decoration: underline;
+  cursor: pointer;
+  font-family: 'Anonymous Pro', monospace; /* Match guestLink font */
+  font-size: inherit; /* Inherit size from parent paragraph */
+  vertical-align: baseline; /* Align with surrounding text */
+  display: inline; /* Behave like inline text */
+  transition: color 0.2s ease;
+}
+
+.switchButton:hover {
+  color: #FFFFFF; /* Match guestLink hover */
 }
 
 /* Style for Register button to match MapPage filter buttons */

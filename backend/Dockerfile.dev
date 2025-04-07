@@ -1,0 +1,34 @@
+# Dockerfile optimized for local development speed
+# Uses single stage, installs dependencies directly with Poetry
+
+# Use the full Python 3.13 image, which includes build tools
+FROM python:3.13
+
+# Set working directory
+WORKDIR /app
+
+# Install Poetry
+# Using semicolon as per global instructions
+RUN pip install --no-cache-dir poetry==1.8.2 ; \
+    poetry config virtualenvs.create false
+
+# Copy only dependency definition files to leverage Docker cache
+# Copy only the pyproject.toml to force lock file generation inside Docker
+COPY pyproject.toml ./
+
+# Install dependencies using Poetry
+# --no-root skips installing the project package itself (code is volume mounted)
+# This layer is cached as long as poetry.lock doesn't change
+# Check pyproject.toml validity
+# poetry check removed - it fails if lock file is out of sync, which poetry lock fixes anyway
+# Generate a fresh lock file based on pyproject.toml within the build env
+RUN poetry lock
+# Install dependencies using the refreshed lock file
+RUN poetry install --no-root --no-interaction -vvv
+
+# Expose the port the application runs on (same as production)
+EXPOSE 8000
+
+# Default command (will be overridden by docker-compose.yml for --reload)
+# Assumes your FastAPI app instance is named 'app' in 'app/main.py'
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

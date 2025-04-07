@@ -2,8 +2,8 @@
 name = "selkie-backend"
 version = "0.1.0"
 description = "Backend services for the Selkie project"
-authors = ["Selkie Dev Tamdev@selkie.local&gt;"]
-readme = "README.md" # Optional: Add a README later
+authors = ["Michael Nehring <mika.nehring@gmail.com>"]
+# readme = "README.md" # Removed: Not needed/copied in Docker dev build
 packages = [{include = "app"}] # Assuming main code will be in an 'app' directory
 
 [tool.poetry.dependencies]

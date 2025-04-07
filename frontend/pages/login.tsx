@@ -60,7 +60,7 @@ const LoginPage: React.FC = () => {
       </p>
 
       {/* Use button to call context function */}
-      <button onClick={continueAsGuest} className={styles.guestLink}>
+      <button onClick={continueAsGuest} className={styles.switchButton}>
         continue as guest
       </button>
 
