@@ -9,8 +9,10 @@ import styles from '../styles/MapPage.module.css';
 import { styleOptions } from '../components/map/LayersMenu';
 import LayersMenu, { defaultStyleOption, StyleOption } from '../components/map/LayersMenu';
 import { FaPlus, FaMinus, FaCompass, FaClock } from 'react-icons/fa';
-import type { Map } from 'leaflet';
-import type { LatLngBounds } from 'leaflet';
+// Keep the comprehensive import and the geocoder JS import
+import L, { Map, LatLngExpression, LatLngBounds, LatLng } from 'leaflet'; // Import Leaflet and types
+import 'leaflet-control-geocoder'; // Import the geocoder library (ensure JS is loaded)
+// Removed duplicate/redundant imports for Map and LatLngBounds
 import FilterButtons from '../components/map/FilterButtons';
 import SearchBar from '../components/map/SearchBar';
 import ContextWindowPlaceholder from '../components/map/ContextWindowPlaceholder';
@@ -198,6 +200,10 @@ const DjinnPage: React.FC = () => {
   const [yoloDetections, setYoloDetections] = useState<Detection[]>([]); // API results
   const [isLoadingDetections, setIsLoadingDetections] = useState<boolean>(false); // API loading
   // const [detectionError, setDetectionError] = useState<string | null>(null); // API error - Replaced by toast notifications
+  // --- Search State ---
+  const [currentSearchMarker, setCurrentSearchMarker] = useState<L.Marker | null>(null);
+  const [highlightedLayers, setHighlightedLayers] = useState<{ layer: L.Layer, originalStyle: L.PathOptions }[]>([]); // Assuming internal data are Path layers
+  const geocoderRef = useRef<any | null>(null); // Use 'any' for geocoder instance type due to potential TS issues
 
   // --- Placeholder Data (Can be removed if API is primary source) ---
   const [rawDetections, setRawDetections] = useState<Detection[]>([
@@ -243,6 +249,214 @@ const DjinnPage: React.FC = () => {
     loadFiltersFromStorage();
   }, []); // Run only once on mount
 
+  // --- Search Implementation (Based on djinn_search_plan.md) ---
+
+  // Initialize Geocoder instance
+  useEffect(() => {
+    // Use type casting for Geocoder
+    if (typeof window !== 'undefined' && (L.Control as any).Geocoder) {
+        // Ensure Leaflet and the plugin are loaded client-side
+        // Use type casting for Geocoder
+        geocoderRef.current = (L.Control as any).Geocoder.nominatim();
+    }
+  }, []);
+
+  // Helper: Clear previous search results
+  const clearSearchResults = useCallback(() => {
+    if (currentSearchMarker && mapRef.current) {
+        mapRef.current.removeLayer(currentSearchMarker);
+        setCurrentSearchMarker(null);
+    }
+    highlightedLayers.forEach(item => {
+        try {
+            // Attempt to reset style - requires knowing the layer type
+            if ('setStyle' in item.layer) {
+                (item.layer as L.Path).setStyle(item.originalStyle);
+            }
+        } catch (e) { console.error("Error reverting style:", e); }
+    });
+    setHighlightedLayers([]);
+    mapRef.current?.closePopup();
+  }, [currentSearchMarker, highlightedLayers, mapRef]); // Added mapRef dependency
+
+  // Helper: Search internal data layers (using rawDetections as source)
+  const searchInternalLayers = useCallback((term: string): { layer?: L.Layer, name: string, location: LatLngExpression | LatLngBounds }[] => {
+    const matches: { layer?: L.Layer, name: string, location: LatLngExpression | LatLngBounds }[] = [];
+    if (!mapRef.current) return matches; // Need map instance to find layers potentially
+
+    const lowerCaseTerm = term.toLowerCase();
+
+    // Option 1: Search the raw data before it becomes layers
+    // This is simpler if layers aren't easily iterable or don't store all needed data
+    rawDetections.forEach(detection => {
+        let found = false;
+        // Check detection class
+        if (detection.class.toLowerCase().includes(lowerCaseTerm)) {
+            found = true;
+        }
+        // Add checks for other properties if needed (e.g., detection.id)
+
+        if (found) {
+            matches.push({
+                // Layer reference might be tricky here if not searching actual layers
+                // We might need to find the layer corresponding to the detection ID later
+                name: `Detection: ${detection.class} (${detection.id})`,
+                location: detection.location // Use the location from data
+            });
+        }
+    });
+
+    // Option 2: Iterate over actual map layers (More complex, needs layer group reference)
+    // Example: if you have a layer group named 'detectionLayerGroup'
+    /*
+    if (detectionLayerGroupRef.current) {
+        detectionLayerGroupRef.current.eachLayer(layer => {
+            // Access layer data (e.g., layer.options.detectionData)
+            // Perform checks similar to Option 1
+            // If match, push { layer: layer, name: ..., location: layer.getLatLng() } to matches
+        });
+    }
+    */
+
+    console.log(`Internal search found ${matches.length} matches for '${term}'`);
+    return matches;
+  }, [rawDetections, mapRef]); // Added mapRef dependency
+
+  // Helper: Perform Geocoding (async)
+  const performGeocoding = useCallback((term: string, internalResults: any[]) => {
+    if (!geocoderRef.current) {
+        console.error("Geocoder not initialized");
+        displayCombinedResults(internalResults, []); // Display internal results even if geocoder fails
+        return;
+    }
+    console.log(`Performing geocoding for: ${term}`);
+    // Use 'any' for geocoderRef.current and cast Result type
+    geocoderRef.current.geocode(term, (geocodingResults: any[]) => { // Using any[] for results for simplicity
+        console.log(`Geocoding results received:`, geocodingResults);
+        displayCombinedResults(internalResults, geocodingResults || []);
+    });
+  }, [geocoderRef]); // Removed displayCombinedResults from deps, it uses state/refs
+
+  // Helper: Display combined results
+  // Use 'any[]' for geocodingMatches type
+  const displayCombinedResults = useCallback((internalMatches: any[], geocodingMatches: any[]) => {
+    if (!mapRef.current) return;
+    const mapInstance = mapRef.current;
+    clearSearchResults(); // Clear previous results first
+
+    const allBounds: (LatLng | LatLngBounds)[] = [];
+    const newHighlightedLayers: { layer: L.Layer, originalStyle: L.PathOptions }[] = [];
+
+    // --- Display Internal Matches ---
+    // This part needs refinement based on how internal layers are actually rendered
+    // For now, we'll just log them and add their locations to bounds
+    console.log(`Displaying ${internalMatches.length} internal matches.`);
+    internalMatches.forEach(match => {
+        if (match.location) {
+            // We don't have the actual layer reference easily here with Option 1 search
+            // So we can't highlight directly. We could add temporary markers instead.
+            // Add marker for internal match, but don't open popup
+            const tempMarker = L.marker(match.location as LatLngExpression).addTo(mapInstance)
+                .bindPopup(`Internal: ${match.name}`); // Removed .openPopup()
+            // Add marker to a temporary list to be cleared later? Or handle via clearSearchResults?
+            // For now, let's just add bounds
+            if (match.location instanceof L.LatLng || Array.isArray(match.location)) {
+                allBounds.push(L.latLng(match.location as LatLngExpression));
+            } else if (match.location instanceof L.LatLngBounds) {
+                allBounds.push(match.location);
+            }
+        }
+        // If using Option 2 search (iterating layers), highlighting would look like:
+        /*
+        try {
+            const layer = match.layer as L.Path; // Assuming Path layers
+            const originalStyle = JSON.parse(JSON.stringify(layer.options.style || L.Path.prototype.options));
+            newHighlightedLayers.push({ layer: layer, originalStyle: originalStyle });
+            layer.setStyle({ color: 'yellow', weight: 5, fillColor: 'yellow', fillOpacity: 0.4 }); // Highlight
+            // layer.openPopup(); // Removed .openPopup()
+            layer.openPopup();
+            if (match.location instanceof L.LatLng) allBounds.push(match.location);
+            else if (match.location instanceof L.LatLngBounds) allBounds.push(match.location);
+        } catch (e) { console.error("Error processing internal match:", e); }
+        */
+    });
+    // setHighlightedLayers(newHighlightedLayers); // Only if using Option 2 search
+
+    // --- Display Top Geocoding Match ---
+    console.log(`Displaying ${geocodingMatches.length} geocoding matches.`);
+    if (geocodingMatches.length > 0) {
+        const topResult = geocodingMatches[0];
+        // Add marker for geocoding result, but don't open popup
+        const marker = L.marker(topResult.center).addTo(mapInstance)
+            .bindPopup(`Location: ${topResult.name}`); // Removed .openPopup()
+        setCurrentSearchMarker(marker);
+        allBounds.push(topResult.bbox instanceof L.LatLngBounds ? topResult.bbox : topResult.center);
+    }
+
+    // --- Adjust Map View ---
+    if (allBounds.length > 0) {
+        // Create bounds iteratively to handle mixed LatLng and LatLngBounds
+        let combinedBounds = L.latLngBounds([]); // Start with empty bounds
+        allBounds.forEach(bound => {
+            if (bound instanceof L.LatLng) {
+                combinedBounds.extend(bound);
+            } else if (bound instanceof L.LatLngBounds) {
+                combinedBounds.extend(bound); // extend can handle LatLngBounds directly
+            }
+        });
+
+        if (combinedBounds.isValid()) {
+             mapInstance.flyToBounds(combinedBounds.pad(0.1));
+        } else if (allBounds.length === 1 && allBounds[0] instanceof L.LatLng) {
+             // Fallback for single point if bounds somehow invalid
+             mapInstance.flyTo(allBounds[0], 15);
+        } else {
+             console.error("Could not determine valid bounds for results:", allBounds);
+        }
+    } else {
+        console.log("No results found to display.");
+        // Optionally show a toast notification
+        toast.info('No results found.', { containerId: 'mapNotifications' });
+    }
+  }, [mapRef, clearSearchResults]); // Dependencies
+
+  // --- Main Search Handler ---
+  const handleSearch = useCallback(async (searchTerm: string) => {
+    if (!searchTerm) {
+        clearSearchResults();
+        return;
+    }
+    console.log(`Search triggered for: "${searchTerm}"`);
+
+    // Step 1: Attempt Coordinate Parse
+    const coordMatch = searchTerm.match(/^\s*(-?\d{1,3}(?:\.\d+)?)\s*,\s*(-?\d{1,3}(?:\.\d+)?)\s*$/);
+    if (coordMatch) {
+        const lat = parseFloat(coordMatch[1]);
+        const lon = parseFloat(coordMatch[2]);
+        if (lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
+            console.log(`Coordinate match found: ${lat}, ${lon}`);
+            clearSearchResults();
+            if (mapRef.current) {
+                mapRef.current.flyTo([lat, lon], 15);
+                // Add marker for coordinate result, but don't open popup
+                const marker = L.marker([lat, lon]).addTo(mapRef.current)
+                    .bindPopup(`Coordinates: ${lat.toFixed(4)}, ${lon.toFixed(4)}`); // Removed .openPopup()
+                setCurrentSearchMarker(marker);
+            }
+            return; // Stop processing
+        }
+    }
+
+    // If not coordinates, proceed
+    clearSearchResults(); // Clear previous non-coord results
+
+    // Step 2: Perform Internal Data Search
+    const internalResults = searchInternalLayers(searchTerm);
+
+    // Step 3: Perform Geocoding Search (will call displayCombinedResults in callback)
+    performGeocoding(searchTerm, internalResults);
+
+  }, [mapRef, clearSearchResults, searchInternalLayers, performGeocoding]); // Dependencies
   // --- Handlers ---
 
   // Helper function to recursively find and update sidebar items
@@ -657,7 +871,7 @@ const updateSingleItemState = (
         <FilterButtons />
       </div>
       <div className={styles.searchBarOverlay}>
-        <SearchBar />
+        <SearchBar onSearch={handleSearch} />
       </div>
       {/* Button moved to Sidebar */}
       {/* Error display removed, handled by toast notifications */}
