@@ -11,7 +11,7 @@ interface LayoutProps {
   children: ReactNode;
   title?: string; // Optional title for the page head
   hideSidebar?: boolean; // Optional prop to hide the sidebar
-  sidebarProps?: Partial<SidebarProps>; // Optional props to pass down to the Sidebar
+  sidebarProps?: SidebarProps; // Optional props to pass down to the Sidebar (Expects full props if provided)
 }
 
 const Layout: React.FC<LayoutProps> = ({ children, title = 'Selkie', hideSidebar, sidebarProps }) => {

@@ -26,169 +26,28 @@ interface SidebarItemProps {
   onToggleOpen: (id: string) => void;
   onToggleCheck: (id: string) => void;
   onInputChange: (id: string, value: string) => void; // Input value is string
+  // Add props for detection button
+  onDetectObjects?: () => void;
+  isLoadingDetections?: boolean;
 }
 
 // Props for the main Sidebar component - Adjusted to match expected props in Layout/DjinnPage
 export interface SidebarProps {
   sections: SidebarItemData[]; // Renamed from sidebarProps in Layout to sections for consistency
+  onToggleOpen: (id: string) => void; // Add missing prop
   onToggleCheck: (id: string) => void;
   onInputChange: (id: string, value: string) => void;
   // Add any other props the Layout component expects to pass down, if necessary
+  // Add props for detection button
+  onDetectObjects?: () => void;
+  isLoadingDetections?: boolean;
   // For now, assuming these are the core props based on the Testing Grounds logic
   // Add handlers for save/load if they are managed by the parent and passed down
   onSaveFilters?: () => void;
   onLoadFilters?: () => void;
 }
 
-
-// --- Sample Data Structure (Illustrative) ---
-// This structure demonstrates how the data for the new sidebar items
-// should be organized. In a real application, this data would typically
-// be managed by a parent component (like DjinnPage or Layout) and passed
-// down via the 'sections' prop.
-
-const sampleSidebarStructure: SidebarItemData[] = [
-  // Computer Vision Section
-  {
-    id: 'cv', title: 'Computer Vision', isChecked: false, isOpen: false, items: [
-      { id: 'cv-detection', title: 'Detection Threshold', isChecked: false, isSubOpen: false, subItems: [
-          { id: 'cv-detection-confidence', title: 'Confidence Score', isChecked: false, hasSlider: true /* 0.1-0.9 */ },
-          { id: 'cv-detection-size', title: 'Object Size Range', isChecked: false, hasInput: true /* pixels/meters/feet */ },
-          { id: 'cv-detection-sensitivity', title: 'Class Sensitivity', isChecked: false, hasPicker: true /* Aircraft, vessels, etc. */, subSubItems: [
-              { id: 'cv-sensitivity-aircraft', title: 'Aircraft', isChecked: false },
-              { id: 'cv-sensitivity-vessels', title: 'Vessels', isChecked: false },
-              { id: 'cv-sensitivity-vehicles', title: 'Land Vehicles', isChecked: false },
-              // Potentially more nested classes here
-          ]},
-      ]},
-      { id: 'cv-temporal', title: 'Temporal Filters', isChecked: false, isSubOpen: false, subItems: [
-          { id: 'cv-temporal-hours', title: 'Detections within X hours', isChecked: false, hasSlider: true /* 1-72 */ },
-          { id: 'cv-temporal-timelapse', title: 'Time-lapse Speed', isChecked: false, hasSlider: true /* 1x-10x */ },
-          { id: 'cv-temporal-history', title: 'Historical Comparison', isChecked: false, hasPicker: true /* Side-by-side/Overlay */ },
-      ]},
-      { id: 'cv-class', title: 'Object Class Filter', isChecked: false, isSubOpen: false, subItems: [
-          { id: 'cv-class-aircraft', title: 'Aircraft', isChecked: false, subSubItems: [
-              { id: 'cv-class-aircraft-comm', title: 'Commercial', isChecked: false },
-              { id: 'cv-class-aircraft-mil', title: 'Military', isChecked: false },
-              { id: 'cv-class-aircraft-priv', title: 'Private', isChecked: false },
-              { id: 'cv-class-aircraft-unk', title: 'Unknown', isChecked: false },
-          ]},
-          { id: 'cv-class-maritime', title: 'Maritime Vessels', isChecked: false, subSubItems: [
-              { id: 'cv-class-maritime-cargo', title: 'Cargo', isChecked: false },
-              { id: 'cv-class-maritime-tanker', title: 'Tanker', isChecked: false },
-              // ... other vessel types
-          ]},
-          { id: 'cv-class-ground', title: 'Ground Vehicles', isChecked: false, subSubItems: [
-              { id: 'cv-class-ground-civ', title: 'Civilian', isChecked: false },
-              { id: 'cv-class-ground-mil', title: 'Military', isChecked: false },
-              // ... other vehicle types
-          ]},
-      ]},
-      { id: 'cv-spatial', title: 'Spatial Constraints', isChecked: false, isSubOpen: false, subItems: [
-          { id: 'cv-spatial-bbox', title: 'Map Extent BBox', isChecked: false, hasPicker: true /* Map interaction? */ },
-          { id: 'cv-spatial-alt', title: 'Altitude/Elevation Range', isChecked: false, hasSlider: true },
-          { id: 'cv-spatial-poi', title: 'Proximity to POIs', isChecked: false, hasPicker: true /* Select POIs? */ },
-      ]},
-      { id: 'cv-output', title: 'Output Metrics', isChecked: false, isSubOpen: false, subItems: [
-          { id: 'cv-output-count', title: 'Detection Count', isChecked: false, hasPicker: true /* per km²/bbox/extent */ },
-          { id: 'cv-output-dist', title: 'Class Distribution', isChecked: false /* Display only? */ },
-          { id: 'cv-output-heatmap', title: 'Heatmap Density', isChecked: false },
-          { id: 'cv-output-stats', title: 'Additional Stats', isChecked: false /* Display only? */ },
-      ]},
-    ]
-  },
-  // Weather Section
-  {
-    id: 'weather', title: 'Weather', isChecked: false, isOpen: false, items: [
-      { id: 'weather-forecast', title: 'Forecast Layers', isChecked: false, isSubOpen: false, subItems: [
-          { id: 'weather-forecast-time', title: 'Time Window', isChecked: false, hasSlider: true /* 0-72 hrs */ },
-          { id: 'weather-forecast-precip', title: 'Precipitation Type', isChecked: false, hasPicker: true /* rain/snow/hail */ },
-          { id: 'weather-forecast-storm', title: 'Storm Tracking', isChecked: false },
-      ]},
-      { id: 'weather-sea', title: 'Sea State', isChecked: false, isSubOpen: false, subItems: [
-          { id: 'weather-sea-wave', title: 'Wave Height', isChecked: false, hasSlider: true /* 0-15m */ },
-          { id: 'weather-sea-swell', title: 'Swell Direction', isChecked: false, hasSlider: true /* 0-360 deg */ },
-          { id: 'weather-sea-temp', title: 'Water Temp Anomaly', isChecked: false },
-      ]},
-      { id: 'weather-atmos', title: 'Atmospheric Sensors', isChecked: false, isSubOpen: false, subItems: [
-          { id: 'weather-atmos-wind', title: 'Wind Vectors', isChecked: false },
-          { id: 'weather-atmos-aqi', title: 'Air Quality Index', isChecked: false, hasPicker: true /* PM2.5/CO2 */ },
-          { id: 'weather-atmos-lightning', title: 'Lightning Strike Density', isChecked: false },
-      ]},
-      { id: 'weather-extreme', title: 'Extreme Events', isChecked: false, isSubOpen: false, subItems: [
-          { id: 'weather-extreme-hurricane', title: 'Hurricane/Cyclone Alerts', isChecked: false },
-          { id: 'weather-extreme-flood', title: 'Flood Risk Zones', isChecked: false, hasSlider: true /* 1-5 severity */ },
-          { id: 'weather-extreme-fire', title: 'Wildfire Smoke Dispersion', isChecked: false },
-      ]},
-      { id: 'weather-climate', title: 'Climate Overlays', isChecked: false, isSubOpen: false, subItems: [
-          { id: 'weather-climate-avg', title: 'Historical Averages', isChecked: false },
-          { id: 'weather-climate-drought', title: 'Drought Index', isChecked: false },
-          { id: 'weather-climate-ice', title: 'Ice Cover Percentage', isChecked: false, hasSlider: true },
-      ]},
-    ]
-  },
-  // Aerial Section
-  {
-    id: 'aerial', title: 'Aerial', isChecked: false, isOpen: false, items: [
-       { id: 'aerial-tracking', title: 'Flight Tracking', isChecked: false, isSubOpen: false, subItems: [
-           { id: 'aerial-tracking-alt', title: 'Altitude Range', isChecked: false, hasSlider: true /* 0-50k ft */ },
-           { id: 'aerial-tracking-type', title: 'Aircraft Type', isChecked: false, hasPicker: true /* comm/mil/uav */ },
-           { id: 'aerial-tracking-emerg', title: 'Emergency Status', isChecked: false, hasPicker: true /* mayday/squawk */ },
-       ]},
-       { id: 'aerial-imagery', title: 'Imagery Sources', isChecked: false, isSubOpen: false, subItems: [
-           { id: 'aerial-imagery-source', title: 'Satellite vs UAV', isChecked: false, hasPicker: true },
-           { id: 'aerial-imagery-band', title: 'Spectral Band', isChecked: false, hasPicker: true /* RGB/IR */ },
-           { id: 'aerial-imagery-cloud', title: 'Cloud Cover Tolerance', isChecked: false, hasSlider: true /* 0-100% */ },
-       ]},
-       { id: 'aerial-density', title: 'Density Metrics', isChecked: false, isSubOpen: false, subItems: [
-           { id: 'aerial-density-heatmap', title: 'Flights/Hour Heatmap', isChecked: false },
-           { id: 'aerial-density-noise', title: 'Noise Pollution Contours', isChecked: false },
-           { id: 'aerial-density-airspace', title: 'Restricted Airspace Alerts', isChecked: false },
-       ]},
-    ]
-  },
-  // Maritime Section
-  {
-    id: 'maritime', title: 'Maritime', isChecked: false, isOpen: false, items: [
-        { id: 'maritime-filters', title: 'Vessel Filters', isChecked: false, isSubOpen: false, subItems: [
-            { id: 'maritime-filters-speed', title: 'Speed Range', isChecked: false, hasSlider: true /* 0-30 knots */ },
-            { id: 'maritime-filters-draft', title: 'Draft Depth', isChecked: false, hasSlider: true /* 1-25m */ },
-            { id: 'maritime-filters-flag', title: 'Flag State', isChecked: false, hasPicker: true },
-        ]},
-        { id: 'maritime-cargo', title: 'Cargo Metrics', isChecked: false, isSubOpen: false, subItems: [
-            { id: 'maritime-cargo-count', title: 'Container Count Estimate', isChecked: false },
-            { id: 'maritime-cargo-hazmat', title: 'Hazardous Material Flags', isChecked: false },
-            { id: 'maritime-cargo-congestion', title: 'Port Congestion Indicators', isChecked: false },
-        ]},
-        { id: 'maritime-env', title: 'Environmental Sensors', isChecked: false, isSubOpen: false, subItems: [
-            { id: 'maritime-env-spill', title: 'Oil Spill Detection', isChecked: false },
-            { id: 'maritime-env-fishing', title: 'Illegal Fishing Alerts', isChecked: false },
-            { id: 'maritime-env-cetacean', title: 'Cetacean Migration Paths', isChecked: false },
-        ]},
-    ]
-  },
-  // Land Section
-  {
-    id: 'land', title: 'Land', isChecked: false, isOpen: false, items: [
-        { id: 'land-traffic', title: 'Traffic Analytics', isChecked: false, isSubOpen: false, subItems: [
-            { id: 'land-traffic-congestion', title: 'Congestion Level', isChecked: false, hasPicker: true /* low/med/high */ },
-            { id: 'land-traffic-incidents', title: 'Incident Reports', isChecked: false },
-            { id: 'land-traffic-ev', title: 'EV Charging Density', isChecked: false },
-        ]},
-        { id: 'land-infra', title: 'Infrastructure', isChecked: false, isSubOpen: false, subItems: [
-            { id: 'land-infra-bridge', title: 'Bridge Weight Limits', isChecked: false },
-            { id: 'land-infra-rail', title: 'Railway Crossing Status', isChecked: false },
-            { id: 'land-infra-power', title: 'Power Grid Load', isChecked: false },
-        ]},
-        { id: 'land-terrain', title: 'Terrain Analysis', isChecked: false, isSubOpen: false, subItems: [
-            { id: 'land-terrain-slope', title: 'Slope Angle', isChecked: false, hasSlider: true /* 0-45 deg */ },
-            { id: 'land-terrain-veg', title: 'Vegetation Health (NDVI)', isChecked: false },
-            { id: 'land-terrain-heat', title: 'Urban Heat Island', isChecked: false },
-        ]},
-    ]
-  },
-];
-
+// Sample structure removed, now managed by parent component
 
 // --- Sidebar Item Component ---
 
@@ -198,6 +57,9 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
   onToggleOpen,
   onToggleCheck,
   onInputChange,
+  // Add detection props
+  onDetectObjects,
+  isLoadingDetections,
 }) => {
   // Determine if the item has any children in any of the possible arrays
   const hasChildren = (item.items && item.items.length > 0) ||
@@ -323,9 +185,24 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
               onToggleOpen={onToggleOpen}
               onToggleCheck={onToggleCheck}
               onInputChange={onInputChange}
-            />
-          ))}
-        </div>
+              // Pass detection props down
+              onDetectObjects={onDetectObjects}
+              isLoadingDetections={isLoadingDetections}
+                        />
+                      ))}
+                      {/* Conditionally render Detect button for CV section */}
+                      {item.id === 'cv' && onDetectObjects && ( // Corrected ID check
+                         <div className={styles.detectButtonContainer}> {/* Add a container for styling */}
+                            <button
+                                onClick={onDetectObjects}
+                                disabled={isLoadingDetections}
+                                className={styles.sidebarDetectButton} // Use a specific class
+                            >
+                                {isLoadingDetections ? 'Detecting...' : 'Detect Objects'}
+                            </button>
+                         </div>
+                      )}
+                    </div>
       )}
     </div>
   );
@@ -336,42 +213,21 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
 
 const Sidebar: React.FC<SidebarProps> = ({
   sections,
+  onToggleOpen, // Receive toggle open handler
   onToggleCheck,
   onInputChange,
   onSaveFilters, // Receive save handler
   onLoadFilters, // Receive load handler
+  // Receive detection props
+  onDetectObjects,
+  isLoadingDetections,
 }) => {
-  const [sidebarData, setSidebarData] = useState<SidebarItemData[]>(sampleSidebarStructure);
+  // REMOVED: Internal state for sidebarData. Use the 'sections' prop directly.
+  // const [sidebarData, setSidebarData] = useState<SidebarItemData[]>(sampleSidebarStructure);
 
-  // Recursive function to toggle the open state of an item by ID
-  const findAndToggleOpen = (items: SidebarItemData[], id: string): SidebarItemData[] => {
-    return items.map(item => {
-      if (item.id === id) {
-        // Determine which open state property to toggle
-        const isOpenKey = item.items ? 'isOpen' : 'isSubOpen'; // Adjust based on your structure if needed
-        return { ...item, [isOpenKey]: !item[isOpenKey] };
-      }
-      // Recursively search in children
-      let children: SidebarItemData[] | undefined;
-      if (item.items) children = item.items;
-      else if (item.subItems) children = item.subItems;
-      else if (item.subSubItems) children = item.subSubItems;
-
-      if (children) {
-        const updatedChildren = findAndToggleOpen(children, id);
-        if (updatedChildren !== children) { // Only update if a child was changed
-           if (item.items) return { ...item, items: updatedChildren };
-           if (item.subItems) return { ...item, subItems: updatedChildren };
-           if (item.subSubItems) return { ...item, subSubItems: updatedChildren };
-        }
-      }
-      return item; // No change
-    });
-  };
-
-  const handleToggleOpen = useCallback((id: string) => {
-    setSidebarData(currentData => findAndToggleOpen(currentData, id));
-  }, []); // No dependencies needed as findAndToggleOpen is stable
+  // REMOVED: Internal toggle handler. Use the 'onToggleOpen' prop directly.
+  // const findAndToggleOpen = ...
+  // const handleToggleOpen = useCallback(...)
 
 
   // Note: The state management (useState, useCallback for handlers)
@@ -383,14 +239,18 @@ const Sidebar: React.FC<SidebarProps> = ({
     <aside className={styles.sidebarContainer}>
        {/* Optional: Add a title or header if the layout sidebar needs one */}
        {/* <h2 className={styles.sidebarTitle}>Layers & Filters</h2> */}
-      {sidebarData.map(section => (
+      {/* Use the 'sections' prop passed down from the parent */}
+      {sections.map(section => (
         <SidebarItem
           key={section.id}
           item={section}
           level={0} // Top-level items are level 0
-          onToggleOpen={handleToggleOpen}
+          onToggleOpen={onToggleOpen} // Pass down the received handler
           onToggleCheck={onToggleCheck}
           onInputChange={onInputChange}
+          // Pass detection props down
+          onDetectObjects={onDetectObjects}
+          isLoadingDetections={isLoadingDetections}
         />
       ))}
        {/* Render Save/Load buttons if handlers are provided */}

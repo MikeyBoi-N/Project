@@ -15,6 +15,9 @@ import FilterButtons from '../components/map/FilterButtons';
 import SearchBar from '../components/map/SearchBar';
 import ContextWindowPlaceholder from '../components/map/ContextWindowPlaceholder';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import notificationStyles from '../styles/Notifications.module.css';
 // Dynamically import the map component to avoid SSR issues with Leaflet
 const SharedMapComponent = dynamic(
   () => import('../components/map/SharedMapComponent'),
@@ -33,6 +36,150 @@ type Detection = {
   location: { lat: number; lng: number };
 };
 
+// Define the detailed sidebar structure here
+const sampleSidebarStructure: SidebarItemData[] = [
+  // Computer Vision Section
+  {
+    id: 'cv', title: 'Computer Vision', isChecked: false, isOpen: false, items: [
+      { id: 'cv-detection', title: 'Detection Threshold', isChecked: false, isSubOpen: false, subItems: [
+          { id: 'cv-detection-confidence', title: 'Confidence Score', isChecked: false, hasSlider: true /* 0.1-0.9 */ },
+          { id: 'cv-detection-size', title: 'Object Size Range', isChecked: false, hasInput: true /* pixels/meters/feet */ },
+          { id: 'cv-detection-sensitivity', title: 'Class Sensitivity', isChecked: false, hasPicker: true /* Aircraft, vessels, etc. */, subSubItems: [
+              { id: 'cv-sensitivity-aircraft', title: 'Aircraft', isChecked: false },
+              { id: 'cv-sensitivity-vessels', title: 'Vessels', isChecked: false },
+              { id: 'cv-sensitivity-vehicles', title: 'Land Vehicles', isChecked: false },
+              // Potentially more nested classes here
+          ]},
+      ]},
+      { id: 'cv-temporal', title: 'Temporal Filters', isChecked: false, isSubOpen: false, subItems: [
+          { id: 'cv-temporal-hours', title: 'Detections within X hours', isChecked: false, hasSlider: true /* 1-72 */ },
+          { id: 'cv-temporal-timelapse', title: 'Time-lapse Speed', isChecked: false, hasSlider: true /* 1x-10x */ },
+          { id: 'cv-temporal-history', title: 'Historical Comparison', isChecked: false, hasPicker: true /* Side-by-side/Overlay */ },
+      ]},
+      { id: 'cv-class', title: 'Object Class Filter', isChecked: false, isSubOpen: false, subItems: [
+          { id: 'cv-class-aircraft', title: 'Aircraft', isChecked: false, subSubItems: [
+              { id: 'cv-class-aircraft-comm', title: 'Commercial', isChecked: false },
+              { id: 'cv-class-aircraft-mil', title: 'Military', isChecked: false },
+              { id: 'cv-class-aircraft-priv', title: 'Private', isChecked: false },
+              { id: 'cv-class-aircraft-unk', title: 'Unknown', isChecked: false },
+          ]},
+          { id: 'cv-class-maritime', title: 'Maritime Vessels', isChecked: false, subSubItems: [
+              { id: 'cv-class-maritime-cargo', title: 'Cargo', isChecked: false },
+              { id: 'cv-class-maritime-tanker', title: 'Tanker', isChecked: false },
+              // ... other vessel types
+          ]},
+          { id: 'cv-class-ground', title: 'Ground Vehicles', isChecked: false, subSubItems: [
+              { id: 'cv-class-ground-civ', title: 'Civilian', isChecked: false },
+              { id: 'cv-class-ground-mil', title: 'Military', isChecked: false },
+              // ... other vehicle types
+          ]},
+      ]},
+      { id: 'cv-spatial', title: 'Spatial Constraints', isChecked: false, isSubOpen: false, subItems: [
+          { id: 'cv-spatial-bbox', title: 'Map Extent BBox', isChecked: false, hasPicker: true /* Map interaction? */ },
+          { id: 'cv-spatial-alt', title: 'Altitude/Elevation Range', isChecked: false, hasSlider: true },
+          { id: 'cv-spatial-poi', title: 'Proximity to POIs', isChecked: false, hasPicker: true /* Select POIs? */ },
+      ]},
+      { id: 'cv-output', title: 'Output Metrics', isChecked: false, isSubOpen: false, subItems: [
+          { id: 'cv-output-count', title: 'Detection Count', isChecked: false, hasPicker: true /* per km²/bbox/extent */ },
+          { id: 'cv-output-dist', title: 'Class Distribution', isChecked: false /* Display only? */ },
+          { id: 'cv-output-heatmap', title: 'Heatmap Density', isChecked: false },
+          { id: 'cv-output-stats', title: 'Additional Stats', isChecked: false /* Display only? */ },
+      ]},
+    ]
+  },
+  // Weather Section
+  {
+    id: 'weather', title: 'Weather', isChecked: false, isOpen: false, items: [
+      { id: 'weather-forecast', title: 'Forecast Layers', isChecked: false, isSubOpen: false, subItems: [
+          { id: 'weather-forecast-time', title: 'Time Window', isChecked: false, hasSlider: true /* 0-72 hrs */ },
+          { id: 'weather-forecast-precip', title: 'Precipitation Type', isChecked: false, hasPicker: true /* rain/snow/hail */ },
+          { id: 'weather-forecast-storm', title: 'Storm Tracking', isChecked: false },
+      ]},
+      { id: 'weather-sea', title: 'Sea State', isChecked: false, isSubOpen: false, subItems: [
+          { id: 'weather-sea-wave', title: 'Wave Height', isChecked: false, hasSlider: true /* 0-15m */ },
+          { id: 'weather-sea-swell', title: 'Swell Direction', isChecked: false, hasSlider: true /* 0-360 deg */ },
+          { id: 'weather-sea-temp', title: 'Water Temp Anomaly', isChecked: false },
+      ]},
+      { id: 'weather-atmos', title: 'Atmospheric Sensors', isChecked: false, isSubOpen: false, subItems: [
+          { id: 'weather-atmos-wind', title: 'Wind Vectors', isChecked: false },
+          { id: 'weather-atmos-aqi', title: 'Air Quality Index', isChecked: false, hasPicker: true /* PM2.5/CO2 */ },
+          { id: 'weather-atmos-lightning', title: 'Lightning Strike Density', isChecked: false },
+      ]},
+      { id: 'weather-extreme', title: 'Extreme Events', isChecked: false, isSubOpen: false, subItems: [
+          { id: 'weather-extreme-hurricane', title: 'Hurricane/Cyclone Alerts', isChecked: false },
+          { id: 'weather-extreme-flood', title: 'Flood Risk Zones', isChecked: false, hasSlider: true /* 1-5 severity */ },
+          { id: 'weather-extreme-fire', title: 'Wildfire Smoke Dispersion', isChecked: false },
+      ]},
+      { id: 'weather-climate', title: 'Climate Overlays', isChecked: false, isSubOpen: false, subItems: [
+          { id: 'weather-climate-avg', title: 'Historical Averages', isChecked: false },
+          { id: 'weather-climate-drought', title: 'Drought Index', isChecked: false },
+          { id: 'weather-climate-ice', title: 'Ice Cover Percentage', isChecked: false, hasSlider: true },
+      ]},
+    ]
+  },
+  // Aerial Section
+  {
+    id: 'aerial', title: 'Aerial', isChecked: false, isOpen: false, items: [
+       { id: 'aerial-tracking', title: 'Flight Tracking', isChecked: false, isSubOpen: false, subItems: [
+           { id: 'aerial-tracking-alt', title: 'Altitude Range', isChecked: false, hasSlider: true /* 0-50k ft */ },
+           { id: 'aerial-tracking-type', title: 'Aircraft Type', isChecked: false, hasPicker: true /* comm/mil/uav */ },
+           { id: 'aerial-tracking-emerg', title: 'Emergency Status', isChecked: false, hasPicker: true /* mayday/squawk */ },
+       ]},
+       { id: 'aerial-imagery', title: 'Imagery Sources', isChecked: false, isSubOpen: false, subItems: [
+           { id: 'aerial-imagery-source', title: 'Satellite vs UAV', isChecked: false, hasPicker: true },
+           { id: 'aerial-imagery-band', title: 'Spectral Band', isChecked: false, hasPicker: true /* RGB/IR */ },
+           { id: 'aerial-imagery-cloud', title: 'Cloud Cover Tolerance', isChecked: false, hasSlider: true /* 0-100% */ },
+       ]},
+       { id: 'aerial-density', title: 'Density Metrics', isChecked: false, isSubOpen: false, subItems: [
+           { id: 'aerial-density-heatmap', title: 'Flights/Hour Heatmap', isChecked: false },
+           { id: 'aerial-density-noise', title: 'Noise Pollution Contours', isChecked: false },
+           { id: 'aerial-density-airspace', title: 'Restricted Airspace Alerts', isChecked: false },
+       ]},
+    ]
+  },
+  // Maritime Section
+  {
+    id: 'maritime', title: 'Maritime', isChecked: false, isOpen: false, items: [
+        { id: 'maritime-filters', title: 'Vessel Filters', isChecked: false, isSubOpen: false, subItems: [
+            { id: 'maritime-filters-speed', title: 'Speed Range', isChecked: false, hasSlider: true /* 0-30 knots */ },
+            { id: 'maritime-filters-draft', title: 'Draft Depth', isChecked: false, hasSlider: true /* 1-25m */ },
+            { id: 'maritime-filters-flag', title: 'Flag State', isChecked: false, hasPicker: true },
+        ]},
+        { id: 'maritime-cargo', title: 'Cargo Metrics', isChecked: false, isSubOpen: false, subItems: [
+            { id: 'maritime-cargo-count', title: 'Container Count Estimate', isChecked: false },
+            { id: 'maritime-cargo-hazmat', title: 'Hazardous Material Flags', isChecked: false },
+            { id: 'maritime-cargo-congestion', title: 'Port Congestion Indicators', isChecked: false },
+        ]},
+        { id: 'maritime-env', title: 'Environmental Sensors', isChecked: false, isSubOpen: false, subItems: [
+            { id: 'maritime-env-spill', title: 'Oil Spill Detection', isChecked: false },
+            { id: 'maritime-env-fishing', title: 'Illegal Fishing Alerts', isChecked: false },
+            { id: 'maritime-env-cetacean', title: 'Cetacean Migration Paths', isChecked: false },
+        ]},
+    ]
+  },
+  // Land Section
+  {
+    id: 'land', title: 'Land', isChecked: false, isOpen: false, items: [
+        { id: 'land-traffic', title: 'Traffic Analytics', isChecked: false, isSubOpen: false, subItems: [
+            { id: 'land-traffic-congestion', title: 'Congestion Level', isChecked: false, hasPicker: true /* low/med/high */ },
+            { id: 'land-traffic-incidents', title: 'Incident Reports', isChecked: false },
+            { id: 'land-traffic-ev', title: 'EV Charging Density', isChecked: false },
+        ]},
+        { id: 'land-infra', title: 'Infrastructure', isChecked: false, isSubOpen: false, subItems: [
+            { id: 'land-infra-bridge', title: 'Bridge Weight Limits', isChecked: false },
+            { id: 'land-infra-rail', title: 'Railway Crossing Status', isChecked: false },
+            { id: 'land-infra-power', title: 'Power Grid Load', isChecked: false },
+        ]},
+        { id: 'land-terrain', title: 'Terrain Analysis', isChecked: false, isSubOpen: false, subItems: [
+            { id: 'land-terrain-slope', title: 'Slope Angle', isChecked: false, hasSlider: true /* 0-45 deg */ },
+            { id: 'land-terrain-veg', title: 'Vegetation Health (NDVI)', isChecked: false },
+            { id: 'land-terrain-heat', title: 'Urban Heat Island', isChecked: false },
+        ]},
+    ]
+  },
+];
+
+
 const DjinnPage: React.FC = () => {
   // --- Core State ---
   const { isGuest } = useAuth(); // Auth status
@@ -40,25 +187,9 @@ const DjinnPage: React.FC = () => {
   const mapRef = useRef<Map | null>(null); // Map instance
 
   // --- NEW Layout Sidebar State (Adapted from Testing Grounds) ---
-  const initialSidebarSections: SidebarItemData[] = [
-    { id: 'air', title: 'Air', isOpen: false, isChecked: false, items: [] },
-    { id: 'maritime', title: 'Maritime', isOpen: false, isChecked: false, items: [] },
-    { id: 'computer-vision', title: 'Computer Vision', isOpen: true, isChecked: true, items: [
-      { id: 'detection-filters', title: 'Detection Filters', isSubOpen: false, isChecked: true, subItems: [] },
-      { id: 'confidence-score', title: 'Confidence Score', isSubOpen: false, isChecked: true, subItems: [], hasInput: true, inputValue: 87 },
-      { id: 'preferences', title: 'Preferences', isSubOpen: true, isChecked: true, subItems: [
-        { id: 'align-rotation', title: 'Align detection rotation', isChecked: true },
-        { id: 'segmentation', title: 'Segmentation', isSubOpen: false, isChecked: true, subSubItems: [] },
-        { id: 'opacity', title: 'Opacity', isChecked: true, hasSlider: true },
-        { id: 'theme', title: 'Theme', isChecked: true, hasPicker: true }
-      ]}
-    ]},
-    { id: 'signals', title: 'Signals', isOpen: false, isChecked: false, items: [] },
-    { id: 'imagery', title: 'Imagery', isOpen: false, isChecked: false, items: [] },
-    { id: 'weather', title: 'Weather', isOpen: false, isChecked: false, items: [] },
-  ];
-  const [sidebarSections, setSidebarSections] = useState<SidebarItemData[]>(initialSidebarSections);
-
+  // --- NEW Layout Sidebar State ---
+  // Initialize with the detailed structure moved from Sidebar.tsx
+  const [sidebarSections, setSidebarSections] = useState<SidebarItemData[]>(sampleSidebarStructure);
   // --- Other Page State (Previously existed, needed for filtering/map/API) ---
   const [selectedClasses, setSelectedClasses] = useState<Set<string>>(new Set(['car', 'person'])); // Filter state
   const [confidenceThreshold, setConfidenceThreshold] = useState<number>(0.5); // Filter state
@@ -66,7 +197,7 @@ const DjinnPage: React.FC = () => {
   const [objectCount, setObjectCount] = useState<number | null>(0); // Display state (derived)
   const [yoloDetections, setYoloDetections] = useState<Detection[]>([]); // API results
   const [isLoadingDetections, setIsLoadingDetections] = useState<boolean>(false); // API loading
-  const [detectionError, setDetectionError] = useState<string | null>(null); // API error
+  // const [detectionError, setDetectionError] = useState<string | null>(null); // API error - Replaced by toast notifications
 
   // --- Placeholder Data (Can be removed if API is primary source) ---
   const [rawDetections, setRawDetections] = useState<Detection[]>([
@@ -208,7 +339,7 @@ const DjinnPage: React.FC = () => {
 
         // Load sidebar state snapshot if available
         if (Array.isArray(parsedData.sidebarStateSnapshot)) {
-           setSidebarSections(parsedData.sidebarStateSnapshot);
+           // setSidebarSections(parsedData.sidebarStateSnapshot); // Temporarily disabled to test hypothesis
            // Also update related filter states based on loaded sidebar state
            const confidenceItem = parsedData.sidebarStateSnapshot
              .flatMap((s: SidebarItemData) => s.items ?? [])
@@ -271,29 +402,36 @@ const DjinnPage: React.FC = () => {
   const handleDetectObjectsClick = async () => {
     if (!mapRef.current) {
       console.error('Map instance not available');
-      setDetectionError('Map instance not ready.');
+      toast.error('Map instance not ready.', { className: notificationStyles.errorToast, progressClassName: notificationStyles.errorToastProgress });
       return;
     }
 
     const mapInstance = mapRef.current;
     setIsLoadingDetections(true);
-    setDetectionError(null);
+    // setDetectionError(null); // Clear previous errors implicitly
     setYoloDetections([]);
 
     leafletImage(mapInstance, async (err: Error | null, canvas: HTMLCanvasElement) => {
       if (err) {
         console.error('Error capturing map image:', err);
-        setDetectionError(`Failed to capture map image: ${err.message}`);
+        toast.error("Error capturing map image", { autoClose: 5000, className: notificationStyles.errorToast, progressClassName: notificationStyles.errorToastProgress });
         setIsLoadingDetections(false);
         return;
       }
 
       try {
+        console.log('leafletImage callback: mapInstance valid?', !!mapInstance);
+        console.log('leafletImage callback: canvas object:', canvas);
         const imageData = canvas.toDataURL('image/png');
         const boundsRaw = mapInstance.getBounds();
+        console.log('leafletImage callback: boundsRaw object:', boundsRaw);
+        const sw = boundsRaw.getSouthWest();
+        const ne = boundsRaw.getNorthEast();
+        console.log('leafletImage callback: sw object:', sw);
+        console.log('leafletImage callback: ne object:', ne);
         const bounds = {
-          _southWest: { lat: boundsRaw.getSouthWest().lat, lng: boundsRaw.getSouthWest().lng },
-          _northEast: { lat: boundsRaw.getNorthEast().lat, lng: boundsRaw.getNorthEast().lng },
+          _southWest: { lat: sw.lat, lng: sw.lng },
+          _northEast: { lat: ne.lat, lng: ne.lng },
         };
 
         console.log('Sending detection request with bounds:', bounds);
@@ -315,7 +453,7 @@ const DjinnPage: React.FC = () => {
 
       } catch (error: any) {
         console.error('Error calling detection API:', error);
-        setDetectionError(`Detection failed: ${error.message}`);
+        toast.error("Detection request failed: API error", { autoClose: 10000, className: notificationStyles.errorToast, progressClassName: notificationStyles.errorToastProgress });
         setYoloDetections([]);
       } finally {
         setIsLoadingDetections(false);
@@ -335,8 +473,12 @@ const DjinnPage: React.FC = () => {
         onInputChange: handleSidebarInputChange,
         onSaveFilters: handleSaveFilters, // Pass save/load handlers
         onLoadFilters: handleLoadFilters,
+        // Pass detection props down
+        onDetectObjects: handleDetectObjectsClick,
+        isLoadingDetections: isLoadingDetections,
       }}
     >
+      <ToastContainer autoClose={5000} hideProgressBar theme="colored" />
       {/* Map Component */}
       <SharedMapComponent
         tileLayerInfo={selectedStyle}
@@ -352,16 +494,9 @@ const DjinnPage: React.FC = () => {
       <div className={styles.searchBarOverlay}>
         <SearchBar />
       </div>
-      <div className={styles.detectionTriggerOverlay}>
-         <button
-           onClick={handleDetectObjectsClick}
-           disabled={isLoadingDetections}
-           className={styles.detectButton}
-         >
-           {isLoadingDetections ? 'Detecting...' : 'Detect Objects in View'}
-         </button>
-         {detectionError && <p className={styles.detectionError}>Error: {detectionError}</p>}
-       </div>
+      {/* Button moved to Sidebar */}
+      {/* Error display removed, handled by toast notifications */}
+      {/* Closing brace removed */}
       <div className={styles.contextWindowOverlay}>
         <ContextWindowPlaceholder />
       </div>

@@ -1,0 +1,13 @@
+/* Example rules in frontend/styles/Notifications.module.css */
+.errorToast {
+  background-color: #ffdddd; /* Light red background */ 
+  color: #d8000b4d; /* Dark red text */
+  border-radius: 5px;
+  font-family: sans-serif;
+  position: fixed;
+  /* Add other desired styles: padding, font-size, etc. */
+}
+
+.errorToastProgress {
+   background: #d8000b5d; /* Red progress bar */
+}

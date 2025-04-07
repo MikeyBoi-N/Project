@@ -2,6 +2,7 @@
 /* These will overwrite frontend/components/layout/Sidebar.module.css */
 
 .sidebarContainer {
+  min-width: 450px; /* Minimum width for the sidebar */
   width: 450px; /* Or keep existing width from layout if preferred */
   height: 100%; /* Take full height of parent */
   background-color: #131313;
@@ -127,9 +128,37 @@
   font-size: 11px;
   padding: 3px 6px;
   width: 35px;
-  text-align: center;
-  box-sizing: border-box;
+} /* <-- Added missing closing brace */
+
+
+/* --- Detect Objects Button Styles --- */
+.detectButtonContainer {
+  padding: 5px 0px; /* Add some padding around the button */
 }
+
+.sidebarDetectButton {
+  width: 100%;
+  padding: 8px 12px;
+  background-color: #595f8433; /* Example button color */
+  color: #ffffff6b;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-align: center;
+  transition: background-color 0.2s ease;
+}
+
+.sidebarDetectButton:hover {
+  background-color: #6a6e9a; /* Lighter on hover */
+}
+
+.sidebarDetectButton:disabled {
+  background-color: #333;
+  color: #888;
+  cursor: not-allowed;
+  box-sizing: border-box; /* Moved property inside */
+} /* Correct closing brace for :disabled rule */
 /* Remove browser default arrows for number input */
 .confidenceInput::-webkit-outer-spin-button,
 .confidenceInput::-webkit-inner-spin-button {
