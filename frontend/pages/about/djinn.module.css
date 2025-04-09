@@ -46,15 +46,33 @@
 }
 
 .heroSection {
-  display: flex;
-  align-items: flex-start; /* Align items to the top */
-  gap: 4rem; /* Consistent gap */
+  display: flex; /* Keep flex to align textContainer */
+  align-items: flex-start; /* Align textContainer to the top */
   margin-bottom: 4rem; /* Consistent margin */
+  position: relative; /* Keep relative for positioning context */
+  width: 100vw; /* Make section full viewport width */
+  left: 50%; /* Center the full-width element */
+  transform: translateX(-50%); /* Center the full-width element */
+  background-image: url('/images/promo/djinn/djinn_promo_main.png');
+  background-repeat: no-repeat;
+  background-size: cover; /* Scale to cover entire area, maintaining aspect ratio */
+  height: 1200px;
+  background-position: center bottom; /* Center horizontally, align to bottom */
+  padding: 2rem 0; /* Vertical padding only, background reaches edges */
+  z-index: 0; /* Base stacking context */
+  /* overflow: hidden; /* Removed to prevent text clipping */
 }
 
 .textContainer {
-  flex: 1; /* Adjust flex ratio if needed */
-  padding-top: 2rem; /* Consistent padding */
+  /* Removed flex: 1 */
+  padding-top: 2rem; /* Keep vertical padding */
+  max-width: 1400px; /* Constrain text width (match mainContent max-width) */
+  width: 100%; /* Take full width within the max-width */
+  margin: 0 auto; /* Center the text block */
+  padding-left: 5rem; /* Add horizontal padding *inside* the text container */
+  padding-right: 5rem; /* Add horizontal padding *inside* the text container */
+  position: relative; /* Ensure it can be layered */
+  z-index: 1; /* Place text *above* the background */
 }
 
 .title {
@@ -77,18 +95,21 @@
   margin-bottom: 1.5rem; /* Consistent margin */
 }
 
-.imageContainer {
-  flex: 1; /* Adjust flex ratio if needed */
-  max-width: 50%; /* Control max width */
-  margin-top: 1rem; /* Consistent margin */
+.description_djinn_promo {
+  /* font-family: "Inter", sans-serif; From Figma style_Z9WLLP */
+  font-weight: 700; /* From Figma style_Z9WLLP */
+  font-size: 2.5rem; /* Consistent size */
+  line-height: 1.8; /* From Figma style_Z9WLLP */
+  letter-spacing: 0.1em; /* From Figma style_Z9WLLP */
+  color: #ffffff;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.8), /* Black shadow */
+    0 0 15px rgba(0, 0, 0, 0.459); /* Faint black shadow */
+  margin-bottom: 2rem; /* Consistent margin */
 }
 
-.imageContainer img {
-  width: 100%;
-  height: auto;
-  object-fit: contain; /* Ensure image scales correctly */
-  border-radius: 8px; /* Optional: Add slight rounding if desired */
-}
+/* .imageContainer rule removed as image is now background of heroSection */
+
+/* .imageContainer img rule removed */
 
 /* Add more styles for other sections/elements based on Figma */
 
@@ -186,14 +207,44 @@
 
 
 
+
+/* --- Style for ATR Text Overlay --- */
+.atrTextOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.5rem;
+  z-index: 1; /* Ensure text is above image */
+  color: #FFFFFF;
+  margin: 0; /* Reset margin */
+  border-bottom-left-radius: 8px; /* Optional: match image rounding if any */
+  border-bottom-right-radius: 8px; /* Optional: match image rounding if any */
+}
+
+.atrTextOverlay .subHeading {
+  margin-top: 0; /* Remove top margin */
+  margin-bottom: 0.75rem; /* Space below heading */
+  color: #E0E0E0;
+  font-size: 1.3rem; /* Slightly smaller heading for overlay */
+}
+
+.atrTextOverlay .description {
+  margin-bottom: 0; /* Remove bottom margin */
+  color: #FFFFFF;
+  font-size: 0.95rem; /* Smaller description text for overlay */
+  line-height: 1.5; /* Adjust line height */
+  letter-spacing: 0.03em; /* Adjust letter spacing */
+}
+
 /* Style for the main page title */
 .pageTitle {
   font-family: "Inter", sans-serif;
   font-weight: 700; /* Bold */
-  font-size: 4rem; /* Increased size */
+  font-size: 8rem; /* Increased size */
   line-height: 1.3;
   text-align: left; /* Left align */
-  margin-bottom: 2rem; /* Increased bottom margin */
+  margin-bottom: 8rem; /* Increased bottom margin */
   color: #FFFFFF;
 }
 
