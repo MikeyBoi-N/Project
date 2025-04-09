@@ -11,6 +11,14 @@ const Home: NextPage = () => {
   const isAuthenticated = false; // Placeholder: Replace with actual auth check
   return (
     <div className={styles.container}>
+      <video
+        className={styles.backgroundVideo}
+        src="/images/home/Home_background.mp4"
+        autoPlay
+        loop
+        muted
+        playsInline
+      />
       <PromoHeader />
       <Head>
         <title>Selkie</title>
@@ -30,17 +38,7 @@ const Home: NextPage = () => {
           <Link href={isAuthenticated ? "/djinn" : "/login"} className={styles.ctaButton}> {/* Updated link from /map to /djinn */}
             Start Analyzing
           </Link>
-          {/* Image container moved inside contentArea */}
-          <div className={styles.imageContainer}>
-            <Image
-              src="/images/home/wireframe_cad.png"
-              alt="Wireframe CAD Drawing"
-              layout="intrinsic" // Revert layout to allow relative sizing/positioning
-              width={600} // Aspect ratio hint
-              height={400} // Aspect ratio hint
-              priority
-            />
-          </div>
+          {/* Image container moved inside contentArea - Removed incorrect background element */}
         </div>
       </main>
 
