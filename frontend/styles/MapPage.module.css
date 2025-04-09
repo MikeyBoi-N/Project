@@ -2,7 +2,7 @@
     position: absolute; /* Position relative to the parent (.pageContent in Layout) */
     bottom: 20px;
     right: 20px;
-    z-index: 1001; /* Ensure it's above map tiles (usually z-index 1-400) and potentially other overlays */
+    z-index: 1000; /* Ensure it's above map tiles (usually z-index 1-400) and potentially other overlays */
     display: flex; /* Keep flex */
     /* flex-direction: row; /* Default, so can be omitted */
     align-items: flex-end; /* Align items vertically to the bottom */

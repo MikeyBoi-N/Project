@@ -16,7 +16,7 @@ const Home: NextPage = () => {
         <title>Selkie</title>
         <meta name="description" content="Selkie Intelligence Analysis Suite" />
         {/* Ensure Anonymous Pro font is loaded (e.g., via _app.tsx or global CSS) */}
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/icons/Selkie Logo White.png" />
       </Head>
 
 

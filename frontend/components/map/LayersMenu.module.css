@@ -6,15 +6,15 @@
 }
 
 .layersButton {
-    background-color: transparent; /* Remove background, image provides visual */
+    background-color: rgba(0, 0, 0, 0.5); /* Remove background, image provides visual */
     border: 1px solid rgba(255, 255, 255, 0.3); /* Figma border */
-    padding: 0; /* Remove padding, image fills button */
+    padding: 2px; /* Remove padding, image fills button */
     border-radius: 6px; /* Match Figma node 2040:212 */
     cursor: pointer;
     display: block;
     width: 60px; /* Match Figma node 2040:212 size */
     height: 60px; /* Match Figma node 2040:212 size */
-    margin-bottom: 8px; /* Add some space between button and panel */
+    margin-bottom: -280px; /* Add some space between button and panel */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     overflow: hidden; /* Ensure image respects border-radius */
     transition: border-color 0.2s ease;
@@ -35,8 +35,7 @@
 }
 
 .layersPanel {
-    position: absolute; /* Position relative to container */
-    top: -220px; /* Position directly below the button (height) */
+    position: relative; /* Position relative to container */
     right: 0; /* Align to the right edge of the container */
 
     background-color: #2c2c2e; /* Dark background from Figma fill_MZSN9J (approximated) */
