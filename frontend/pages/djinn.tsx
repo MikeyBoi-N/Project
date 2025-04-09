@@ -1,6 +1,6 @@
 import { useAuth } from '../context/AuthContext'; // Import useAuth
 import { ChangeEvent } from 'react'; // Import ChangeEvent
-import leafletImage from 'leaflet-image';
+// Top-level import removed: import leafletImage from 'leaflet-image'; // Dynamically imported in handleDetectObjectsClick
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import Layout from '../components/layout/Layout';
 import Sidebar, { SidebarItemData } from '../components/layout/Sidebar'; // Import Sidebar and its data type
@@ -10,8 +10,10 @@ import { styleOptions } from '../components/map/LayersMenu';
 import LayersMenu, { defaultStyleOption, StyleOption } from '../components/map/LayersMenu';
 import { FaPlus, FaMinus, FaCompass, FaClock } from 'react-icons/fa';
 // Keep the comprehensive import and the geocoder JS import
-import L, { Map, LatLngExpression, LatLngBounds, LatLng } from 'leaflet'; // Import Leaflet and types
-import 'leaflet-control-geocoder'; // Import the geocoder library (ensure JS is loaded)
+import type { Map as LeafletMap, LatLngExpression, LatLngBounds, LatLng, Layer as LeafletLayer, Control } from 'leaflet'; // Import Leaflet types only
+// Removed top-level Leaflet import to prevent SSR errors. Will dynamically import where needed.
+// import L, { Map, LatLngExpression, LatLngBounds, LatLng } from 'leaflet'; // Import Leaflet and types
+// Top-level import removed: import 'leaflet-control-geocoder'; // Dynamically imported in useEffect
 // Removed duplicate/redundant imports for Map and LatLngBounds
 import FilterButtons from '../components/map/FilterButtons';
 import SearchBar from '../components/map/SearchBar';
@@ -186,7 +188,8 @@ const DjinnPage: React.FC = () => {
   // --- Core State ---
   const { isGuest } = useAuth(); // Auth status
   const [selectedStyle, setSelectedStyle] = useState<StyleOption>(defaultStyleOption); // Map style
-  const mapRef = useRef<Map | null>(null); // Map instance
+  const mapRef = useRef<LeafletMap | null>(null); // Map instance (using imported type)
+  const [leafletInstance, setLeafletInstance] = useState<typeof import('leaflet') | null>(null); // State to hold dynamically loaded Leaflet
 
   // --- NEW Layout Sidebar State (Adapted from Testing Grounds) ---
   // --- NEW Layout Sidebar State ---
@@ -201,8 +204,8 @@ const DjinnPage: React.FC = () => {
   const [isLoadingDetections, setIsLoadingDetections] = useState<boolean>(false); // API loading
   // const [detectionError, setDetectionError] = useState<string | null>(null); // API error - Replaced by toast notifications
   // --- Search State ---
-  const [currentSearchMarker, setCurrentSearchMarker] = useState<L.Marker | null>(null);
-  const [highlightedLayers, setHighlightedLayers] = useState<{ layer: L.Layer, originalStyle: L.PathOptions }[]>([]); // Assuming internal data are Path layers
+  const [currentSearchMarker, setCurrentSearchMarker] = useState<LeafletLayer | null>(null); // Use LeafletLayer type
+  const [highlightedLayers, setHighlightedLayers] = useState<{ layer: LeafletLayer; originalStyle: L.PathOptions }[]>([]); // Use LeafletLayer type, L.PathOptions might need adjustment if L is removed
   const geocoderRef = useRef<any | null>(null); // Use 'any' for geocoder instance type due to potential TS issues
 
   // --- Placeholder Data (Can be removed if API is primary source) ---
@@ -249,17 +252,41 @@ const DjinnPage: React.FC = () => {
     loadFiltersFromStorage();
   }, []); // Run only once on mount
 
+  // --- Effect to dynamically load Leaflet ---
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      import('leaflet').then(L => {
+        setLeafletInstance(L);
+        // Also dynamically import the geocoder CSS here if needed
+        // import('leaflet-control-geocoder/dist/Control.Geocoder.css');
+      }).catch(err => {
+        console.error("Failed to load Leaflet dynamically:", err);
+        // Handle error appropriately, maybe show a message to the user
+      });
+    }
+  }, []); // Run once on mount
+
   // --- Search Implementation (Based on djinn_search_plan.md) ---
 
-  // Initialize Geocoder instance
+  // Initialize Geocoder instance (using dynamically loaded Leaflet and Geocoder)
   useEffect(() => {
-    // Use type casting for Geocoder
-    if (typeof window !== 'undefined' && (L.Control as any).Geocoder) {
-        // Ensure Leaflet and the plugin are loaded client-side
-        // Use type casting for Geocoder
-        geocoderRef.current = (L.Control as any).Geocoder.nominatim();
+    // Ensure Leaflet is loaded and we haven't initialized the geocoder yet
+    if (leafletInstance && typeof window !== 'undefined' && !geocoderRef.current) {
+      // Dynamically import the geocoder JS *after* Leaflet is loaded
+      import('leaflet-control-geocoder')
+        .then(() => {
+          // Now that the plugin script has run, check if it attached itself to L.Control
+          const GeocoderControl = (leafletInstance.Control as any)?.Geocoder;
+          if (GeocoderControl?.nominatim) {
+            geocoderRef.current = GeocoderControl.nominatim();
+            console.log("Geocoder initialized dynamically.");
+          } else {
+            console.error("Leaflet Geocoder plugin not found or failed to initialize after dynamic import.");
+          }
+        })
+        .catch(err => console.error("Failed to dynamically load leaflet-control-geocoder:", err));
     }
-  }, []);
+  }, [leafletInstance]); // Re-run if leafletInstance changes (becomes available)
 
   // Helper: Clear previous search results
   const clearSearchResults = useCallback(() => {
@@ -271,7 +298,7 @@ const DjinnPage: React.FC = () => {
         try {
             // Attempt to reset style - requires knowing the layer type
             if ('setStyle' in item.layer) {
-                (item.layer as L.Path).setStyle(item.originalStyle);
+                (item.layer as any).setStyle?.(item.originalStyle); // Use optional chaining for safety
             }
         } catch (e) { console.error("Error reverting style:", e); }
     });
@@ -280,7 +307,8 @@ const DjinnPage: React.FC = () => {
   }, [currentSearchMarker, highlightedLayers, mapRef]); // Added mapRef dependency
 
   // Helper: Search internal data layers (using rawDetections as source)
-  const searchInternalLayers = useCallback((term: string): { layer?: L.Layer, name: string, location: LatLngExpression | LatLngBounds }[] => {
+  const searchInternalLayers = useCallback((term: string): { layer?: LeafletLayer, name: string, location: LatLngExpression | LatLngBounds }[] => {
+    // No direct L usage here, only types, so no change needed
     const matches: { layer?: L.Layer, name: string, location: LatLngExpression | LatLngBounds }[] = [];
     if (!mapRef.current) return matches; // Need map instance to find layers potentially
 
@@ -322,7 +350,7 @@ const DjinnPage: React.FC = () => {
     return matches;
   }, [rawDetections, mapRef]); // Added mapRef dependency
 
-  // Helper: Perform Geocoding (async)
+  // Helper: Perform Geocoding (async) - Ensure geocoderRef is checked
   const performGeocoding = useCallback((term: string, internalResults: any[]) => {
     if (!geocoderRef.current) {
         console.error("Geocoder not initialized");
@@ -338,14 +366,18 @@ const DjinnPage: React.FC = () => {
   }, [geocoderRef]); // Removed displayCombinedResults from deps, it uses state/refs
 
   // Helper: Display combined results
-  // Use 'any[]' for geocodingMatches type
+  // Use 'any[]' for geocodingMatches type - Ensure geocoderRef.current is checked before calling geocode
   const displayCombinedResults = useCallback((internalMatches: any[], geocodingMatches: any[]) => {
+    if (!leafletInstance) {
+        console.error("Leaflet instance not loaded, cannot display results.");
+        return; // Exit if L is not available
+    }
     if (!mapRef.current) return;
     const mapInstance = mapRef.current;
     clearSearchResults(); // Clear previous results first
 
     const allBounds: (LatLng | LatLngBounds)[] = [];
-    const newHighlightedLayers: { layer: L.Layer, originalStyle: L.PathOptions }[] = [];
+    const newHighlightedLayers: { layer: LeafletLayer; originalStyle: L.PathOptions }[] = []; // Use LeafletLayer type
 
     // --- Display Internal Matches ---
     // This part needs refinement based on how internal layers are actually rendered
@@ -354,15 +386,15 @@ const DjinnPage: React.FC = () => {
     internalMatches.forEach(match => {
         if (match.location) {
             // We don't have the actual layer reference easily here with Option 1 search
-            // So we can't highlight directly. We could add temporary markers instead.
+            // So we can't highlight directly. We could add temporary markers instead using leafletInstance.
             // Add marker for internal match, but don't open popup
-            const tempMarker = L.marker(match.location as LatLngExpression).addTo(mapInstance)
+            const tempMarker = leafletInstance.marker(match.location as LatLngExpression).addTo(mapInstance)
                 .bindPopup(`Internal: ${match.name}`); // Removed .openPopup()
             // Add marker to a temporary list to be cleared later? Or handle via clearSearchResults?
             // For now, let's just add bounds
-            if (match.location instanceof L.LatLng || Array.isArray(match.location)) {
-                allBounds.push(L.latLng(match.location as LatLngExpression));
-            } else if (match.location instanceof L.LatLngBounds) {
+            if (match.location instanceof leafletInstance.LatLng || Array.isArray(match.location)) {
+                allBounds.push(leafletInstance.latLng(match.location as LatLngExpression));
+            } else if (match.location instanceof leafletInstance.LatLngBounds) {
                 allBounds.push(match.location);
             }
         }
@@ -385,29 +417,30 @@ const DjinnPage: React.FC = () => {
     // --- Display Top Geocoding Match ---
     console.log(`Displaying ${geocodingMatches.length} geocoding matches.`);
     if (geocodingMatches.length > 0) {
-        const topResult = geocodingMatches[0];
+        const topResult = geocodingMatches[0]; // Assuming geocoding result structure
         // Add marker for geocoding result, but don't open popup
-        const marker = L.marker(topResult.center).addTo(mapInstance)
+        const marker = leafletInstance.marker(topResult.center).addTo(mapInstance)
             .bindPopup(`Location: ${topResult.name}`); // Removed .openPopup()
-        setCurrentSearchMarker(marker);
-        allBounds.push(topResult.bbox instanceof L.LatLngBounds ? topResult.bbox : topResult.center);
+        setCurrentSearchMarker(marker); // Assuming topResult.center is LatLngExpression compatible
+        // Ensure topResult.bbox is checked against the dynamically loaded LatLngBounds
+        allBounds.push(topResult.bbox instanceof leafletInstance.LatLngBounds ? topResult.bbox : topResult.center);
     }
 
     // --- Adjust Map View ---
     if (allBounds.length > 0) {
         // Create bounds iteratively to handle mixed LatLng and LatLngBounds
-        let combinedBounds = L.latLngBounds([]); // Start with empty bounds
+        let combinedBounds = leafletInstance.latLngBounds([]); // Start with empty bounds
         allBounds.forEach(bound => {
-            if (bound instanceof L.LatLng) {
+            if (bound instanceof leafletInstance.LatLng) {
                 combinedBounds.extend(bound);
-            } else if (bound instanceof L.LatLngBounds) {
+            } else if (bound instanceof leafletInstance.LatLngBounds) {
                 combinedBounds.extend(bound); // extend can handle LatLngBounds directly
             }
         });
 
         if (combinedBounds.isValid()) {
              mapInstance.flyToBounds(combinedBounds.pad(0.1));
-        } else if (allBounds.length === 1 && allBounds[0] instanceof L.LatLng) {
+        } else if (allBounds.length === 1 && allBounds[0] instanceof leafletInstance.LatLng) {
              // Fallback for single point if bounds somehow invalid
              mapInstance.flyTo(allBounds[0], 15);
         } else {
@@ -439,7 +472,8 @@ const DjinnPage: React.FC = () => {
             if (mapRef.current) {
                 mapRef.current.flyTo([lat, lon], 15);
                 // Add marker for coordinate result, but don't open popup
-                const marker = L.marker([lat, lon]).addTo(mapRef.current)
+                if (!leafletInstance) return; // Guard against L not being loaded
+                const marker = leafletInstance.marker([lat, lon]).addTo(mapRef.current)
                     .bindPopup(`Coordinates: ${lat.toFixed(4)}, ${lon.toFixed(4)}`); // Removed .openPopup()
                 setCurrentSearchMarker(marker);
             }

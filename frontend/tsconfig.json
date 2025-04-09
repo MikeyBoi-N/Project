@@ -23,6 +23,6 @@
       "@/*": ["./*"] // Optional: Setup path aliases if needed later
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"], // Files to include in compilation
+  "include": ["next-env.d.ts", "types/**/*.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"], // Files to include in compilation
   "exclude": ["node_modules"] // Folders to exclude
 }

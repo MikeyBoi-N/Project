@@ -16,12 +16,7 @@ import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
 
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl: iconRetinaUrl.src,
-    iconUrl: iconUrl.src,
-    shadowUrl: shadowUrl.src,
-});
+// Moved icon setup to useEffect below to ensure client-side execution
 
 // --- Interfaces (Keep existing MapMarkerData, MapFootprintData) ---
 interface MapMarkerData {
@@ -94,6 +89,21 @@ const defaultCenter: [number, number] = [51.505, -0.09];
 const defaultZoom = 13;
 
 const SharedMapComponent: React.FC<SharedMapComponentProps> = ({ tileLayerInfo, mapRef, detections, visOptions }) => {
+    // --- Effect to fix Leaflet default icon path ---
+    // This needs to run client-side only after Leaflet is loaded.
+    useEffect(() => {
+        // Check if the fix has already been applied (optional, prevents multiple executions)
+        // Using a simple flag on the prototype for check
+        if (!(L.Icon.Default.prototype as any)._iconUrlFixed) {
+            delete (L.Icon.Default.prototype as any)._getIconUrl;
+            L.Icon.Default.mergeOptions({
+                iconRetinaUrl: iconRetinaUrl.src,
+                iconUrl: iconUrl.src,
+                shadowUrl: shadowUrl.src,
+            });
+            (L.Icon.Default.prototype as any)._iconUrlFixed = true; // Mark as fixed
+        }
+    }, []); // Empty dependency array ensures it runs once on mount (client-side)
     // Removed marker state, isLoading, error - data now comes via props
     const [footprints, setFootprints] = useState<MapFootprintData[]>([]);
     // Keep isLoading/error state ONLY if footprints still need fetching internally

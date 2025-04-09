@@ -22,7 +22,9 @@ const PromoHeader: React.FC = () => {
         <Link href="/about/djinn" legacyBehavior><a className={styles.navLink}>Djinn</a></Link> {/* Updated path */}
         <Link href="/about/ghost" legacyBehavior><a className={styles.navLink}>Ghost</a></Link> {/* Updated path */}
         <Link href="/about/argos" legacyBehavior><a className={styles.navLink}>Argos</a></Link> {/* Updated path */}
+        <Link href="/about/projects" legacyBehavior><a className={styles.navLink}>Projects</a></Link> {/* Updated path */}
       </nav>
+      
     </header>
   );
 };

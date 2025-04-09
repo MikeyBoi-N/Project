@@ -2,32 +2,23 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
+import PromoHeader from '../components/promo/PromoHeader'; // Corrected path
 // import { useAuth } from '../context/AuthContext'; // Assuming an auth context hook
-import styles from '../styles/Home.module.css';
+import styles from '../styles/Home.module.css'; './PromoHeader.module.css';
 
 const Home: NextPage = () => {
   // const { isAuthenticated } = useAuth(); // Get auth state
   const isAuthenticated = false; // Placeholder: Replace with actual auth check
   return (
     <div className={styles.container}>
+      <PromoHeader />
       <Head>
-        <title>Selkie - Home</title>
+        <title>Selkie</title>
         <meta name="description" content="Selkie Intelligence Analysis Suite" />
         {/* Ensure Anonymous Pro font is loaded (e.g., via _app.tsx or global CSS) */}
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <header className={styles.header}>
-        <div className={styles.logo}>Selkie</div>
-        <nav className={styles.nav}>
-          {/* Using /about/* paths as previously established */}
-          <Link href="/about/djinn" legacyBehavior><a className={styles.navLink}>Djinn</a></Link>
-          <Link href="/about/ghost" legacyBehavior><a className={styles.navLink}>Ghost</a></Link>
-          <Link href="/about/argos" legacyBehavior><a className={styles.navLink}>Argos</a></Link>
-          {/* Tesseract link included based on Figma design */}
-          <Link href="/about/tesseract" legacyBehavior><a className={styles.navLink}>Tesseract</a></Link>
-        </nav>
-      </header>
 
       <main className={styles.main}>
         <div className={styles.contentArea}>
