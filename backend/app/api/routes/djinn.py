@@ -1,14 +1,18 @@
-from fastapi import APIRouter, HTTPException, status
 import uuid
-from typing import Any, List, Dict # Added List, Dict
-from fastapi import HTTPException, status # Moved status import here for clarity
+from typing import Any, Dict, List  # Added List, Dict
+
+from fastapi import APIRouter  # Moved status import here for clarity
+from fastapi import HTTPException, status
 
 # Import schemas and utility/inference functions
-from app.schemas.djinn import DjinnMapViewRequest, DjinnDetectionResponse, DjinnDetectionResult
-from app.services.djinn.utils.image_processing import decode_base64_image, convert_pixel_to_geo
+from app.schemas.djinn import (DjinnDetectionResponse, DjinnDetectionResult,
+                               DjinnMapViewRequest)
 from app.services.djinn.inference.detection import run_yolo_detection
+from app.services.djinn.utils.image_processing import (convert_pixel_to_geo,
+                                                       decode_base64_image)
 
 router = APIRouter()
+
 
 @router.post(
     "/detect_map_view",
@@ -36,7 +40,7 @@ async def detect_objects_in_map_view(
     # 2. Get Image Dimensions
     img_height, img_width = image_np.shape[:2]
     if img_height == 0 or img_width == 0:
-         raise HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Decoded image has zero dimensions.",
         )
@@ -65,12 +69,12 @@ async def detect_objects_in_map_view(
             # Ensure all necessary data is present
             if not all([bbox_pixels, isinstance(confidence, (float, int)), class_name]):
                 print(f"Skipping detection with missing/invalid data: {detection}")
-                continue # Skip this detection if data is incomplete
+                continue  # Skip this detection if data is incomplete
 
             # Validate bbox format if needed (e.g., length 4)
             if len(bbox_pixels) != 4:
-                 print(f"Skipping detection with invalid bbox: {bbox_pixels}")
-                 continue
+                print(f"Skipping detection with invalid bbox: {bbox_pixels}")
+                continue
 
             # Calculate center pixel coordinates
             center_px = (bbox_pixels[0] + bbox_pixels[2]) / 2
@@ -94,9 +98,9 @@ async def detect_objects_in_map_view(
             # requires a GeoPoint model, this should be adjusted.
             formatted_detection = DjinnDetectionResult(
                 id=detection_id,
-                class_name=str(class_name), # Ensure class_name is string
-                confidence=float(confidence), # Ensure confidence is float
-                location={"lat": lat, "lng": lng}, # As per prompt requirement
+                class_name=str(class_name),  # Ensure class_name is string
+                confidence=float(confidence),  # Ensure confidence is float
+                location={"lat": lat, "lng": lng},  # As per prompt requirement
             )
             formatted_detections.append(formatted_detection)
 
@@ -109,5 +113,6 @@ async def detect_objects_in_map_view(
 
     # 5. Return Response
     return DjinnDetectionResponse(detections=formatted_detections)
+
 
 # Add other Djinn-related endpoints here as needed

@@ -1,19 +1,21 @@
+import logging
 import uuid
 from datetime import datetime, timezone
-import logging
-from neo4j import AsyncDriver
-from typing import Optional, List
+from typing import List, Optional
 
-from . import schemas # Import schemas from the current ghost module
+from neo4j import AsyncDriver
+
+from . import schemas  # Import schemas from the current ghost module
 
 logger = logging.getLogger(__name__)
 
 # --- Signal Event CRUD Operations ---
 
+
 async def create_signal_event(
     driver: AsyncDriver,
     event_in: schemas.SignalEventCreate,
-    recording_storage_uri: Optional[str] = None
+    recording_storage_uri: Optional[str] = None,
 ) -> schemas.SignalEvent:
     """
     Placeholder: Creates a SignalEvent node in Neo4j with its metadata.
@@ -34,23 +36,31 @@ async def create_signal_event(
     # Store latitude/longitude if provided, potentially as Point type for geospatial queries
     # Link to recording_storage_uri if provided
 
-    logger.warning("Placeholder function `create_signal_event` called. Needs implementation.")
+    logger.warning(
+        "Placeholder function `create_signal_event` called. Needs implementation."
+    )
 
     # Return placeholder data matching the schema
     return schemas.SignalEvent(
-        **event_in.model_dump(), # Pydantic V2
+        **event_in.model_dump(),  # Pydantic V2
         id=uuid.uuid4(),
         created_at=datetime.now(timezone.utc),
-        recording_storage_uri=recording_storage_uri
+        recording_storage_uri=recording_storage_uri,
     )
 
-async def get_signal_events(driver: AsyncDriver, limit: int = 100, skip: int = 0) -> List[schemas.SignalEvent]:
+
+async def get_signal_events(
+    driver: AsyncDriver, limit: int = 100, skip: int = 0
+) -> List[schemas.SignalEvent]:
     """
     Placeholder: Retrieves a list of SignalEvent nodes.
     """
     # TODO: Implement actual Neo4j query to retrieve signal events, potentially with filtering/sorting
-    logger.warning("Placeholder function `get_signal_events` called. Needs implementation.")
+    logger.warning(
+        "Placeholder function `get_signal_events` called. Needs implementation."
+    )
     return []
+
 
 # TODO: Add functions to get signal event by ID, update, delete etc. if needed.
 # TODO: Add functions to query events based on time, location, frequency etc.

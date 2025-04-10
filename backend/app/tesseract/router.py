@@ -1,16 +1,18 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Body, status
-from typing import Optional, List, Dict, Any
-import uuid
 import logging
+import uuid
+from typing import Any, Dict, List, Optional
+
+from fastapi import (APIRouter, Body, Depends, File, Form, HTTPException,
+                     UploadFile, status)
 from neo4j import AsyncDriver
 
+from ..auth.schemas import User
+from ..auth.security import get_current_active_user
 # Adjust imports based on actual project structure
 from ..db.session import get_driver
-from ..auth.security import get_current_active_user
-from ..auth.schemas import User
+from . import crud  # Import CRUD functions
+from . import schemas  # Import schemas from the current tesseract module
 
-from . import schemas # Import schemas from the current tesseract module
-from . import crud # Import CRUD functions
 # from ..core.storage import upload_to_storage # TODO: Import storage utility when created
 
 logger = logging.getLogger(__name__)
@@ -21,14 +23,21 @@ router = APIRouter(
     # dependencies=[Depends(get_current_active_user)] # Add auth dependency later if needed globally
 )
 
-@router.post("/scenes/upload", response_model=schemas.TesseractScene, status_code=status.HTTP_201_CREATED)
+
+@router.post(
+    "/scenes/upload",
+    response_model=schemas.TesseractScene,
+    status_code=status.HTTP_201_CREATED,
+)
 async def upload_tesseract_scene(
     # Scene metadata (including footprint) sent as JSON in the request body
     scene_metadata: schemas.TesseractSceneCreate = Body(...),
     # Scene data file (e.g., .splat) sent as a file upload
-    scene_file: UploadFile = File(..., description="Pre-processed Tesseract scene data file (e.g., .splat)"),
+    scene_file: UploadFile = File(
+        ..., description="Pre-processed Tesseract scene data file (e.g., .splat)"
+    ),
     db_driver: AsyncDriver = Depends(get_driver),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Uploads a pre-processed Tesseract scene data file and its associated metadata
@@ -42,20 +51,30 @@ async def upload_tesseract_scene(
 
     # --- 1. Handle Scene Data File Upload ---
     if not scene_file:
-         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Scene data file is required.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Scene data file is required.",
+        )
 
     logger.info(f"Processing scene file: {scene_file.filename}")
     try:
         # TODO: Implement file upload logic using a storage utility
         # scene_data_storage_uri = await upload_to_storage(scene_file, bucket_name="tesseract-scenes")
         # For now, using a placeholder
-        scene_data_storage_uri = f"minio:tesseract-scenes/{uuid.uuid4()}_{scene_file.filename}"
-        logger.debug(f"Placeholder scene data storage URI generated: {scene_data_storage_uri}")
+        scene_data_storage_uri = (
+            f"minio:tesseract-scenes/{uuid.uuid4()}_{scene_file.filename}"
+        )
+        logger.debug(
+            f"Placeholder scene data storage URI generated: {scene_data_storage_uri}"
+        )
     except Exception as e:
-        logger.error(f"Failed to upload scene file {scene_file.filename} to storage: {e}", exc_info=True)
+        logger.error(
+            f"Failed to upload scene file {scene_file.filename} to storage: {e}",
+            exc_info=True,
+        )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Could not upload scene data file to storage."
+            detail="Could not upload scene data file to storage.",
         )
 
     # --- 2. Create Scene Metadata in Graph Database (Neo4j) ---
@@ -64,7 +83,7 @@ async def upload_tesseract_scene(
         created_scene = await crud.create_tesseract_scene(
             driver=db_driver,
             scene_in=scene_metadata,
-            scene_data_storage_uri=scene_data_storage_uri
+            scene_data_storage_uri=scene_data_storage_uri,
         )
         logger.info(f"Tesseract scene metadata created with ID: {created_scene.id}")
         return created_scene
@@ -74,7 +93,7 @@ async def upload_tesseract_scene(
         # TODO: Add cleanup logic (delete scene file from storage if DB fails)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Could not create Tesseract scene metadata in database."
+            detail="Could not create Tesseract scene metadata in database.",
         )
 
 
@@ -82,7 +101,9 @@ async def upload_tesseract_scene(
 async def get_scene_metadata(
     scene_id: uuid.UUID,
     db_driver: AsyncDriver = Depends(get_driver),
-    current_user: User = Depends(get_current_active_user) # Optional: Check permissions
+    current_user: User = Depends(
+        get_current_active_user
+    ),  # Optional: Check permissions
 ):
     """
     Retrieves metadata for a specific Tesseract scene, including its footprint
@@ -92,18 +113,25 @@ async def get_scene_metadata(
     try:
         scene = await crud.get_tesseract_scene(driver=db_driver, scene_id=scene_id)
         if not scene:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tesseract scene not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tesseract scene not found",
+            )
         logger.debug(f"Retrieved metadata for scene {scene_id}")
         return scene
     except HTTPException as http_exc:
         # Re-raise HTTP exceptions directly
         raise http_exc
     except Exception as e:
-        logger.error(f"Failed to retrieve Tesseract scene metadata for {scene_id}: {e}", exc_info=True)
+        logger.error(
+            f"Failed to retrieve Tesseract scene metadata for {scene_id}: {e}",
+            exc_info=True,
+        )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Could not retrieve Tesseract scene metadata."
+            detail="Could not retrieve Tesseract scene metadata.",
         )
+
 
 # TODO: Add endpoint to get list of scenes? (/scenes/) - Calls crud.get_all_tesseract_scenes
 # TODO: Integrate Tesseract router into main.py

@@ -17,22 +17,42 @@ python-jose = {extras = ["cryptography"], version = "^3.3.0"} # JWT handling
 passlib = {extras = ["bcrypt"], version = "^1.7.4"} # Password hashing
 python-dotenv = "^1.0.1" # For loading environment variables from .env file
 authlib = "^1.3.0" # OAuth library
+
 # Add other core dependencies as needed
 pydantic-settings = "^2.2.1" # For loading settings from env vars
-
 pillow = "^10.3.0" # Image handling
 opencv-python-headless = "^4.9.0" # OpenCV (headless version for servers)
 scipy = "^1.13.0" # Scientific and technical computing
 numpy = "^1.26.4" # Fundamental package for numerical computation
+
 # TODO: Add Tesseract dependencies (e.g., Gaussian Splatting libraries, 3D processing) when needed
 ultralytics = "^8.0" # YOLO object detection library
 python-multipart = "^0.0.9" # Needed for FastAPI file uploads/form data
+isort = "^6.0.1"
+flake8 = "^7.2.0"
+bandit = "^1.8.3"
+wheel = "^0.45.1"
+sphinx = "^8.2.3"
+pytest = "^8.3.5"
+pytest-asyncio = "^0.26.0"
+
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0" # Testing framework
 httpx = "^0.27.0" # Async HTTP client for testing FastAPI
 mypy = "^1.10.0" # Static type checker
 ruff = "^0.4.4" # Linter/formatter
+black = "^24.3.0" # Code formatter
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ["py313"]
+include = '\.pyi?$'
+extend-exclude = '''
+# A regex preceded with ^/ will apply only to files and directories
+# in the root of the project.
+^/build/
+'''

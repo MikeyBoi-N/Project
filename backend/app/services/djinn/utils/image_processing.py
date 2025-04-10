@@ -1,10 +1,12 @@
 import base64
+import logging
+from typing import Dict, Optional, Tuple, Union
+
 import cv2
 import numpy as np
-from typing import Dict, Tuple, Optional, Union
-import logging
 
 logger = logging.getLogger(__name__)
+
 
 def decode_base64_image(image_data: str) -> Optional[np.ndarray]:
     """
@@ -20,8 +22,8 @@ def decode_base64_image(image_data: str) -> Optional[np.ndarray]:
     """
     try:
         # Remove potential data URI prefix
-        if ',' in image_data:
-            header, encoded_data = image_data.split(',', 1)
+        if "," in image_data:
+            header, encoded_data = image_data.split(",", 1)
         else:
             encoded_data = image_data
 
@@ -45,7 +47,9 @@ def decode_base64_image(image_data: str) -> Optional[np.ndarray]:
         return None
 
 
-def convert_pixel_to_geo(px: float, py: float, img_width: int, img_height: int, bounds: Dict) -> Tuple[float, float]:
+def convert_pixel_to_geo(
+    px: float, py: float, img_width: int, img_height: int, bounds: Dict
+) -> Tuple[float, float]:
     """
     Converts pixel coordinates (x, y) within an image to geographic
     coordinates (latitude, longitude) based on the image dimensions and
@@ -71,10 +75,10 @@ def convert_pixel_to_geo(px: float, py: float, img_width: int, img_height: int, 
         raise ValueError("Image width and height must be positive.")
 
     try:
-        lat_min = bounds['_southWest']['lat']
-        lng_min = bounds['_southWest']['lng']
-        lat_max = bounds['_northEast']['lat']
-        lng_max = bounds['_northEast']['lng']
+        lat_min = bounds["_southWest"]["lat"]
+        lng_min = bounds["_southWest"]["lng"]
+        lat_max = bounds["_northEast"]["lat"]
+        lng_max = bounds["_northEast"]["lng"]
     except KeyError as e:
         raise ValueError(f"Bounds dictionary is missing required key: {e}")
     except TypeError:
