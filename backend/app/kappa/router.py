@@ -16,8 +16,10 @@ from ..auth.security import get_current_active_user  # Placeholder
 from ..db.session import (
     get_driver,
 )  # Placeholder, might need a specific dependency injector
-from . import crud  # Import CRUD functions
-from . import schemas  # Import schemas from the current kappa module
+from . import (
+    crud,  # Import CRUD functions
+    schemas,  # Import schemas from the current kappa module
+)
 
 # from ..core.storage import upload_to_storage # TODO: Import storage utility when created
 

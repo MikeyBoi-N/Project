@@ -2,8 +2,10 @@ import logging
 from contextlib import asynccontextmanager
 from typing import List, Optional, Tuple
 
-from fastapi import Depends  # Add Depends
-from fastapi import FastAPI
+from fastapi import (
+    Depends,  # Add Depends
+    FastAPI,
+)
 from pydantic import BaseModel
 
 from .auth import router as auth_router  # Import the auth router

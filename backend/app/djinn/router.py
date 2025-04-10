@@ -10,8 +10,10 @@ from ..auth.security import get_current_active_user
 
 # Adjust imports based on actual project structure
 from ..db.session import get_driver
-from . import crud  # TODO: Import CRUD functions when created
-from . import schemas  # Import schemas from the current djinn module
+from . import (
+    crud,  # TODO: Import CRUD functions when created
+    schemas,  # Import schemas from the current djinn module
+)
 
 # from ..core.storage import upload_to_storage # TODO: Import storage utility when created
 # from .processing import run_object_detection # TODO: Import detection logic when created

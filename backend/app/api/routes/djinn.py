@@ -1,8 +1,11 @@
 import uuid
 from typing import Any, Dict, List  # Added List, Dict
 
-from fastapi import APIRouter  # Moved status import here for clarity
-from fastapi import HTTPException, status
+from fastapi import (
+    APIRouter,  # Moved status import here for clarity
+    HTTPException,
+    status,
+)
 
 # Import schemas and utility/inference functions
 from app.schemas.djinn import (

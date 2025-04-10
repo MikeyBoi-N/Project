@@ -1,8 +1,14 @@
 from typing import Annotated  # Use Annotated for Depends syntax in newer FastAPI/Python
 
 from authlib.integrations.starlette_client import OAuth  # Add OAuth
-from fastapi import Depends  # Add Request and Response
-from fastapi import APIRouter, HTTPException, Request, Response, status
+from fastapi import (
+    APIRouter,
+    Depends,  # Add Request and Response
+    HTTPException,
+    Request,
+    Response,
+    status,
+)
 from fastapi.responses import RedirectResponse  # Add RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from neo4j import AsyncManagedTransaction  # Import the correct type hint
