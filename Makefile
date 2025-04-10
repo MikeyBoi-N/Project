@@ -12,11 +12,8 @@ help: ## Show this help message
 
 # Core Development Workflow
 format: ## Auto-format code using Black and isort
-	poetry run isort .
 	poetry run black .
-	poetry run autoflake --remove-all-unused-imports --remove-unused-variables --in-place --recursive .
-	poetry run isort . --profile black --force-single-line-imports --force-grid-wrap 0 --line-length 88
-
+	poetry run isort .
 
 lint: ## Static analysis (Flake8, Pylint, Mypy)
 	poetry run flake8 .
@@ -53,6 +50,7 @@ build: ## Build wheel and source distributions
 deploy: ## Deploy to PyPI (requires configured credentials)
 	poetry publish
 
+
 # Advanced Tooling
 pre-commit: ## Install pre-commit hooks
 	poetry run pre-commit install
@@ -64,3 +62,11 @@ docker: ## Build and run Docker container
 
 watch: ## Auto-rerun tests on file changes
 	poetry run ptw --now . -- tests/
+	@echo "Watching for changes in tests/ directory..."
+	@echo "Press Ctrl+C to stop watching."	
+
+remove-imports: ## Auto-fix code issues (line length, unused imports, formatting)
+	poetry run ruff check --fix .
+	poetry run ruff format .
+	poetry run unimport --remove .
+	poetry run autoflake --remove-all-unused-imports --remove-unused-variables --in-place --recursive .

@@ -2,8 +2,7 @@ import uuid  # For generating unique user IDs if needed
 from datetime import datetime, timezone
 from typing import Optional
 
-from neo4j import (Driver,  # Assuming driver session management
-                   ManagedTransaction)
+from neo4j import ManagedTransaction
 
 from . import schemas, security
 
@@ -156,9 +155,7 @@ def link_google_id_to_user(
     tx: ManagedTransaction, user_id: str, google_id: str
 ) -> bool:
     """Links a Google ID to an existing user identified by user_id."""
-    query = (
-        "MATCH (u:User {user_id: $user_id}) " "SET u.google_id = $google_id " "RETURN u"
-    )
+    query = "MATCH (u:User {user_id: $user_id}) SET u.google_id = $google_id RETURN u"
     result = tx.run(query, user_id=user_id, google_id=google_id)
     summary = result.consume()  # Consume the result to get summary info
     # Check if any properties were set

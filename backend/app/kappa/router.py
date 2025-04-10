@@ -1,20 +1,21 @@
 import logging
 import uuid
-from typing import List, Optional
+from typing import Optional
 
-from fastapi import (APIRouter, Depends, File, Form, HTTPException, UploadFile,
-                     status)
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from neo4j import AsyncDriver  # Import AsyncDriver for type hinting
 
-from ..auth.schemas import \
-    User  # Assuming User schema is defined in auth.schemas
+from ..auth.schemas import User  # Assuming User schema is defined in auth.schemas
+
 # Assuming authentication dependency is available
 # Adjust import based on actual implementation in auth.security
 from ..auth.security import get_current_active_user  # Placeholder
+
 # Assuming Neo4j driver/session management is available via db.session
 # Adjust imports based on actual implementation
-from ..db.session import \
-    get_driver  # Placeholder, might need a specific dependency injector
+from ..db.session import (
+    get_driver,
+)  # Placeholder, might need a specific dependency injector
 from . import crud  # Import CRUD functions
 from . import schemas  # Import schemas from the current kappa module
 

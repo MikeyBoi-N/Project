@@ -1,6 +1,6 @@
 import base64
 import logging
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, Optional, Tuple
 
 import cv2
 import numpy as np

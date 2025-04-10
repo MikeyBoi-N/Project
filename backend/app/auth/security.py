@@ -1,18 +1,13 @@
-import os
 from datetime import datetime, timedelta, timezone
 from typing import Annotated, Optional
 
 from fastapi import Depends, HTTPException, Request, status
-from fastapi.security import \
-    OAuth2PasswordBearer  # Although not directly used for cookie, good to have context
 from jose import JWTError, jwt
 from neo4j import AsyncManagedTransaction  # Import transaction type hint
 from passlib.context import CryptContext
-from pydantic import EmailStr
 
 from app.core.config import settings  # Import centralized settings
-from app.db.session import \
-    get_db_transaction  # Import db transaction dependency
+from app.db.session import get_db_transaction  # Import db transaction dependency
 
 from . import crud, schemas  # Import crud and schemas
 

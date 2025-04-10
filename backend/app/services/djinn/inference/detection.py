@@ -90,7 +90,7 @@ if __name__ == "__main__":
     )
     # Example: Create a dummy black image (requires opencv-python)
     try:
-        import cv2
+        import cv2  # TODO: not imported, so please remove this and try something else
 
         dummy_image = np.zeros((640, 640, 3), dtype=np.uint8)
         if model:

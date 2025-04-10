@@ -5,11 +5,16 @@ from fastapi import APIRouter  # Moved status import here for clarity
 from fastapi import HTTPException, status
 
 # Import schemas and utility/inference functions
-from app.schemas.djinn import (DjinnDetectionResponse, DjinnDetectionResult,
-                               DjinnMapViewRequest)
+from app.schemas.djinn import (
+    DjinnDetectionResponse,
+    DjinnDetectionResult,
+    DjinnMapViewRequest,
+)
 from app.services.djinn.inference.detection import run_yolo_detection
-from app.services.djinn.utils.image_processing import (convert_pixel_to_geo,
-                                                       decode_base64_image)
+from app.services.djinn.utils.image_processing import (
+    convert_pixel_to_geo,
+    decode_base64_image,
+)
 
 router = APIRouter()
 

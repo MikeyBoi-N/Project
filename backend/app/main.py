@@ -8,10 +8,11 @@ from pydantic import BaseModel
 
 from .auth import router as auth_router  # Import the auth router
 from .auth import schemas as auth_schemas  # Import auth schemas
-from .auth.security import \
-    get_current_user_from_cookie  # Import the dependency
-from .db.session import (close_driver,  # Import driver lifecycle functions
-                         get_driver)
+from .auth.security import get_current_user_from_cookie  # Import the dependency
+from .db.session import (
+    close_driver,  # Import driver lifecycle functions
+    get_driver,
+)
 from .djinn import router as djinn_router
 from .ghost import router as ghost_router
 from .kappa import router as kappa_router
@@ -69,7 +70,7 @@ async def get_map_data():
     Provides initial/placeholder geospatial data for the Shared Map Component.
     In later phases, this will aggregate data from Kappa, Djinn, Ghost, Tesseract.
     """
-    logger.info("Request received for /mapdata")
+    logger.info("Request received for /mapdata")  # TODO: logger not defined, FIX THIS
     # TODO: Replace with actual data fetching and aggregation logic
     placeholder_markers = [
         MapMarkerData(

@@ -14,6 +14,10 @@ help: ## Show this help message
 format: ## Auto-format code using Black and isort
 	poetry run black .
 	poetry run isort .
+	poetry run ruff format .
+	poetry run ruff check --fix .
+	poetry run unimport --remove .
+	poetry run autopep8 --in-place --aggressive --max-line-length 90 .
 
 lint: ## Static analysis (Flake8, Pylint, Mypy)
 	poetry run flake8 .
@@ -64,3 +68,9 @@ watch: ## Auto-rerun tests on file changes
 	poetry run ptw --now . -- tests/
 	@echo "Watching for changes in tests/ directory..."
 	@echo "Press Ctrl+C to stop watching."	
+
+remove-imports: ## Auto-fix code issues (line length, unused imports, formatting)
+	poetry run ruff check --fix .
+	poetry run ruff format .
+	poetry run unimport --remove .
+	poetry run autoflake --remove-all-unused-imports --remove-unused-variables --in-place --recursive .

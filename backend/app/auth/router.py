@@ -1,6 +1,4 @@
-import uuid  # For potential state generation if needed, though Authlib handles it
-from typing import \
-    Annotated  # Use Annotated for Depends syntax in newer FastAPI/Python
+from typing import Annotated  # Use Annotated for Depends syntax in newer FastAPI/Python
 
 from authlib.integrations.starlette_client import OAuth  # Add OAuth
 from fastapi import Depends  # Add Request and Response
